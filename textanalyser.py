@@ -5,9 +5,8 @@ from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 import validators
 import nltk
-from nameparser.parser import HumanName
-from nltk.corpus import wordnet
 import unicodedata
+import unidecode
 
 
 class TextAnalyser:
@@ -82,4 +81,5 @@ class TextAnalyser:
         return ascii(unicodedata.normalize('NFC', text))
         
     def normalize_all(self, text):
-        return ascii(unicodedata.normalize('NFKC', text))
+        text = unicodedata.normalize('NFKD', text).encode('ASCII', 'ignore')
+        return unidecode.unidecode(text)

@@ -9,7 +9,7 @@ from geopy.extra.rate_limiter import RateLimiter
 ta = TextAnalyser()
 mm = MongoManager()
 
-class InstaScraper:
+class InstaData:
     def __init__(self, username, password, startuser, layermax, usermax, sleep_time):
         self.USERNAME = username
         self.PASSWORD = password

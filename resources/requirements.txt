@@ -1,0 +1,5 @@
+instagrapi==1.16.29
+geographiclib==1.52
+geopy==2.2.0
+validators==0.20.0
+nltk==3.7
