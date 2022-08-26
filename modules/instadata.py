@@ -39,6 +39,8 @@ class InstaData:
             if key in self.empthy_fields:
                 del data[key]
 
+        username = data["username"]
+
         data["username"] = ta.normalize_all(userinfo["username"])
         data["full_name"] = ta.normalize_all(userinfo["full_name"])
         data["biography"] = ta.normalize_all(userinfo["biography"])
@@ -54,7 +56,14 @@ class InstaData:
         data["keywords"] = ta.findkeywords(data["biography"] + " " + data["full_name"])
         data["mentioned_names"] = ta.findnames(data["biography"])
         data["latest_locations"], data["hashtags"] = self.getmediadata(id)
-        data = ls.getlinktreedata(data)
+
+        data["social_media_profiles"] = {
+            "instagram": "https://instagram.com/" + username
+        }
+        for link in data["link"] + [data["external_url"]]:
+            if "linktr.ee" in link:
+                data["social_media_profiles"]["linktree"] = ta.findlinks(link) or link
+                data = ls.getlinktreedata(data, ta.findlinks(link) or link)
 
         mm.upsert_user(data)
 

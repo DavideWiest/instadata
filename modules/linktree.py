@@ -167,13 +167,11 @@ class LinktreeScraper:
         userobj = loop.run_until_complete(main(url))
         return userobj
 
-    def get_linktreedata(self, data):
+    def get_linktreedata(self, data, link):
 
-        for link in data["link"]:
-            if "linktr.ee" in link:
-                data["linktreedata"] = self.get_linktree(link)
-                for lt_link in data["linktreedata"]["links"]:
-                    data["links"].append(lt_link[1])
+        data["linktreedata"] = self.get_linktree(link)
+        for lt_link in data["linktreedata"]["links"]:
+            data["links"].append(lt_link[1])
 
         if data["linktreedata"]["description"] != None:
             data["linktreedata"]["description"] = ta.normalize_all(data["linktreedata"]["description"])
