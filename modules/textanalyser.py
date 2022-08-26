@@ -23,7 +23,6 @@ class TextAnalyser:
     def findlinks(self, string):
         url_regex = r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))"
         urls = re.findall(url_regex, string)
-        print(urls)
         urls = [url[0] for url in urls]
 
         urls = wa.sanitizeurls(urls)
