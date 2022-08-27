@@ -61,3 +61,7 @@ class MongoManager:
         cursor = self.pcol.find({})
         with open(f"{filename}.json", "w") as file:
             json.dump(json.loads(dumps(cursor)), file)
+
+    def is_in_db(self, id):
+        return self.pcol.find_one({"id": id}, {"_id": False, "id": True, "date_last_updated_at": True})
+        

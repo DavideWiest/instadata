@@ -1,6 +1,6 @@
 from modules.instadata import InstaData
 from modules.mailhandler import MailHandler
-import threading, time
+import threading
 
 USERNAME = "davidewiest"
 PASSWORD = "Novigrad70"
@@ -9,21 +9,16 @@ STARTUSER = "mxr1tz.06" #"cinephonics_alzey"
 ID_FILENAME = "userids2.csv"
 DATA_FILENAME = "data.json"
 
-USERMAX = 5000
-LAYERMAX = 7
-SLEEP_TIME = 0.1
+USERMAX = 100
+LAYERMAX = 3
+SLEEP_TIME = 0
 
 MAIL_USERNAME = "webapp2048@gmail.com"
 MAIL_PASSWORD = ""
 
-def getcode():
-    time.sleep(20)
-    mh = MailHandler()
-    mh.read_last_mail()
-    mh.quitcon()
-    # print("123456\n")
+mh = MailHandler(MAIL_USERNAME, MAIL_PASSWORD)
 
-thread = threading.Thread(target=getcode)
+thread = threading.Thread(target=mh.getcode)
 thread.start()
 
 id = InstaData(USERNAME, PASSWORD, STARTUSER, LAYERMAX, USERMAX, SLEEP_TIME)

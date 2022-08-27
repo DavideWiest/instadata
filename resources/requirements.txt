@@ -5,3 +5,7 @@ validators==0.20.0
 nltk==3.7
 aiohttp==3.8.1
 beautifulsoup4==4.11.1
+pymongo==4.1.1
+unicodedata2==14.0.0
+validators==0.20.0
+langid==1.1.6

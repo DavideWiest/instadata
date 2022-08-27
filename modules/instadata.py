@@ -2,10 +2,12 @@ from instagrapi import Client
 import time
 from modules.textanalyser import TextAnalyser
 from modules.mongomanager import MongoManager
-from modules.linktree import LinktreeScraper, Linktree
+from modules.linktreescraper import LinktreeScraper
 import geopy
 from geopy.geocoders import Nominatim
 from geopy.extra.rate_limiter import RateLimiter
+from datetime import datetime
+import langid
 
 ta = TextAnalyser()
 mm = MongoManager()
@@ -25,15 +27,46 @@ class InstaData:
         self.locator = Nominatim(user_agent="myGeocoder")
         self.empthy_fields = ["account_type", "address_street", "category", "city_id", "city_name", "contact_phone_number", "instagram_location_id", "interop_messaging_user_fbid", "latitude", "longitude", "public_email", "public_phone_country_code", "public_phone_number", "zip"]
 
+        with open("resources/social_websites.txt", "r") as f:
+            f = f.read().split("\n")
+
+        self.social_network_list = f
+
+        with open("resources/most_used_websites.txt", "r") as f:
+            f = f.read().split("\n")
+
+        self.most_used_websites = f
+
     def getaddress(self, lat, long):
         coordinates = lat, long
         location = self.locator.reverse(coordinates)
         return location.address
 
     def is_bot(self, data):
-        pass
+        # run statements with rough score
+        botscore = 0
+        botscore += 1 if (data["follower_count"] / data["following_count"] + 1) > 4 else 0
+        botscore += 1 if data["follower_count"] < 20 else 0
+        botscore += 1 if data["biography"] == "" else 0
+        botscore += 1 if data["media_count"] < 10 else 0
+        botscore += 1 if data["profile_pic_url"] in ("", None, "UNKNOWN") else 0
+        return botscore >= 3
+
+    def is_valuable_domain(self, url):
+        return not any([domain in url for domain in self.most_used_websites])
+
+    def upsertion_unallowed(self, id):
+        in_db = mm.is_in_db(id)
+        if in_db == None:
+            return False
+        else:
+            delta = datetime.now() - in_db["date_last_updated_at"].strptime("%d-%m-%Y, %H:%M:%S")
+            return delta.days < 30
 
     def adduser(self, id):
+
+        if self.upsertion_unallowed(id):
+            return
 
         userinfo = self.cl.user_info(id).dict()
         data = userinfo
@@ -56,13 +89,19 @@ class InstaData:
         data["biography"] = " " + ta.parse_direct_chars(userinfo["biography"]) + " "
 
         data["id"] = id
-        data["domains"] = ta.finddomains(data["biography"] + " " + data["full_name"])
-        data["links"] = ta.findlinks(data["biography"] + " " + data["full_name"])
-        data["emails"] = ta.findemails(data["biography"] + " " + data["full_name"])
-        data["keywords"] = ta.findkeywords(data["biography"])
-        data["mentioned_names"] = ta.findnames(data["biography"])
-        data["latest_locations"], data["hashtags"] = self.getmediadata(id)
+        data["date_last_updated_at"] = datetime.now().strftime("%d-%m-%Y, %H:%M:%S")
         data["gender"] = ta.get_gender(data["full_name"])
+        domains = ta.finddomains(data["biography"] + " " + data["full_name"] + " " + (data["external_url"] or ""))
+        links = ta.findlinks(data["biography"] + " " + data["full_name"] + " " + (data["external_url"] or ""))
+        data["emails"] = ta.findemails(data["biography"] + " " + data["full_name"])
+
+        data["domains"] = {}
+        for domain in domains:
+            data["domains"][domain] = 1 if self.is_valuable_domain(domain) else 0
+
+        data["links"] = {}
+        for link in links:
+            data["links"][link] = 1 if self.is_valuable_domain(link) else 0
 
         data["social_media_profiles"] = {
             "instagram": "https://instagram.com/" + username
@@ -71,16 +110,33 @@ class InstaData:
             if "linktr.ee" in link:
                 data["social_media_profiles"]["linktree"] = ta.findlinks([link], rfn=True) or link
                 data = ls.getlinktreedata(data, ta.findlinks([link], rfn=True) or link)
+            
+            for social_network in self.social_network_list:
+                if social_network in link:
+                    data["social_media_profiles"][social_network.split(".")[0] if social_network != "youtu.be" else "youtube"] = link
+
+        textdata = ""
+        if data["is_private"] == False and (data["social_media_profiles"].get("linktree", None) != None or data["emails"] != [] or any([v == 1 for k, v in data["domains"].items()])):
+            data["mentioned_names"] = ta.findnames(data["biography"])
+            data["latest_locations"], data["hashtags"], textdata = self.getmediadata(id)
+        
+        data["keywords"] = ta.get_keywords((data["biography"], 5), (textdata, 2))
+        
+        textdata += " " + data["biography"]
+
+        data["language"] = langid.classify(textdata)[0]
 
         mm.upsert_user(data)
 
-    def getmediadata(self, userid, number=10):
+    def getmediadata(self, userid, number=8):
         medias = self.cl.user_medias(userid, number)
         locations = {}
         hashtags = {}
+        textdata = ""
         for media in medias:
             try:
                 media = media.dict()
+                textdata += " " + " ".join(media["caption_text"].split(" ")[:8])
                 medialoc = media["location"]
                 address = self.getaddress(medialoc["lat"], medialoc["lng"])
                 
@@ -98,11 +154,13 @@ class InstaData:
                         hashtags[ht] += 1
                     else:
                         hashtags[ht] = 1
-                time.sleep(self.SLEEP_TIME / 10)
+                
+                if self.SLEEP_TIME != 0:
+                    time.sleep(self.SLEEP_TIME / 10)
             except Exception as e:
                 print(f"Error in expandreach: " + str(e))
 
-        return locations, hashtags
+        return locations, hashtags, textdata
 
     def expandreach(self, userid, layer):
         subfollowers = self.cl.user_followers(userid, amount=100)
@@ -148,6 +206,9 @@ class InstaData:
                 if print_info:
                     print(f"{followerid} ({len(totaluserlist)}) of layer {layer} yielded {len(new_user_ids)} new users")
 
+                if self.SLEEP_TIME != 0:
+                    time.sleep(self.SLEEP_TIME)
+                
             if breakwhile:
                 break
 
@@ -159,7 +220,8 @@ class InstaData:
         unpop_ids = mm.get_all_unpopulized()
 
         for id in unpop_ids:
-            time.sleep(self.SLEEP_TIME)
+            if self.SLEEP_TIME != 0:
+                time.sleep(self.SLEEP_TIME)
             self.adduser(id)
 
     def populize_all_from_file(self, filename="ids.txt"):
@@ -169,5 +231,6 @@ class InstaData:
         unpop_ids = [int(a.split(",")[0]) for a in unpop_ids if a != ""]
 
         for id in unpop_ids:
-            time.sleep(self.SLEEP_TIME)
+            if self.SLEEP_TIME != 0:
+                time.sleep(self.SLEEP_TIME)
             self.adduser(id)

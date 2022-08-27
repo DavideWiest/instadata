@@ -9,10 +9,12 @@ import unicodedata
 import unidecode
 import gender_guesser.detector as genderDetector
 from modules.websiteanalyser import WebsiteAnalyser
+from modules.mailhandler import EmailValidator
 
 gd = genderDetector.Detector()
 wa = WebsiteAnalyser()
-        
+ev = EmailValidator()
+
 class TextAnalyser:
     def __init__(self, languages=["english", "german"]):
         self.stopwords = []
@@ -55,7 +57,7 @@ class TextAnalyser:
             except:
                 emails.remove(email)
             
-            if email.startswith("n@") or wa.is_valid_tld(email) or wa.sanitizeurls([email.split("@")[1]], must_be_unique=False, subroutes_allowed=False) == []:
+            if email.startswith("n@") or not wa.is_valid_tld(email) or not ev.is_valid(email):
                 emails.remove(email)
 
         if rfn:
@@ -74,13 +76,20 @@ class TextAnalyser:
         replace_pattern = [(v, "") for v in self.punctuation]
         return self._multireplace(string, replace_pattern)
 
-    def findkeywords(self, string):
-        string = self._remove_punctuation(string)
-        string = self.lemmatizer.lemmatize(string)
-        string = word_tokenize(string)
+    def get_keywords(self, list_string_weight):
+        kwdict = {}
+        for string, weight in list_string_weight:
+            string = self._remove_punctuation(string)
+            string = self.lemmatizer.lemmatize(string)
+            string = word_tokenize(string)
 
-        kwlist = [w for w in string if not w.lower() in self.stopwords and len(w) > 1 and w.isnumeric() == False]
-        return kwlist
+            kwlist = [w for w in string if not w.lower() in self.stopwords and len(w) > 1 and w.isnumeric() == False]
+            for w in kwlist:
+                if w in kwdict:
+                    kwdict[w] = [kwdict[w][0]+weight, kwdict[w][1]+1]
+                else:
+                    kwdict[w] = [weight, 1]
+        return kwdict
 
     def findnames(self, text):
         person_list = []
@@ -136,6 +145,5 @@ class TextAnalyser:
 
     def get_gender(self, fname, country=None):
         gender = gd.get_gender(fname, country)
-        if gender == "andy":
-            gender = "androgynous"
-        return
+        gender = gender.replace("mostly_", "")[0]
+        return gender
