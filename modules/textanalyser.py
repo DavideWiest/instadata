@@ -7,8 +7,10 @@ import validators
 import nltk
 import unicodedata
 import unidecode
+import gender_guesser.detector as genderDetector
 from modules.websiteanalyser import WebsiteAnalyser
 
+gd = genderDetector.Detector()
 wa = WebsiteAnalyser()
         
 class TextAnalyser:
@@ -20,24 +22,31 @@ class TextAnalyser:
         self.punctuation = string.punctuation
         self.lemmatizer = WordNetLemmatizer()
 
-    def findlinks(self, string):
-        url_regex = r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))"
-        urls = re.findall(url_regex, string)
-        urls = [url[0] for url in urls]
+    def findlinks(self, string, rfn=False):
+        urls = re.findall(wa.url_regex, string)
 
-        urls = wa.sanitizeurls(urls)
+        urls = wa.sanitizeurls(urls, must_have_subroutes=True)
 
+        if rfn:
+            try:
+                return urls[0]
+            except:
+                return None
         return urls
 
-    def finddomains(self, string):
-        domain_regex = r"(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]"
-        domains = re.findall(domain_regex, string)
+    def finddomains(self, string, rfn=False):
+        domains = re.findall(wa.url_regex, string)
 
         domains = wa.sanitizeurls(domains)
 
+        if rfn:
+            try:
+                return domains[0]
+            except:
+                return None
         return domains
 
-    def findemails(self, string):
+    def findemails(self, string, rfn=False):
         email_regex = r"[a-z0-9\.\-+_]+@[a-z0-9\.\-+_]+\.[a-z]+"
         emails = re.findall(email_regex, string)
         for email in emails:
@@ -46,10 +55,15 @@ class TextAnalyser:
             except:
                 emails.remove(email)
             
-            if email.startswith("n@") or wa.is_valid_tld(email):
+            if email.startswith("n@") or wa.is_valid_tld(email) or wa.sanitizeurls([email.split("@")[1]], must_be_unique=False, subroutes_allowed=False) == []:
                 emails.remove(email)
 
-        return [email for email in emails if email != ""]
+        if rfn:
+            try:
+                return emails[0]
+            except:
+                return None
+        return emails
 
     def _multireplace(self, string, replace_pattern):
         for arg in replace_pattern:
@@ -119,3 +133,9 @@ class TextAnalyser:
                 hashtags.append(word[1:])
         
         return hashtags
+
+    def get_gender(self, fname, country=None):
+        gender = gd.get_gender(fname, country)
+        if gender == "andy":
+            gender = "androgynous"
+        return

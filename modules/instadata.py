@@ -30,10 +30,16 @@ class InstaData:
         location = self.locator.reverse(coordinates)
         return location.address
 
+    def is_bot(self, data):
+        pass
+
     def adduser(self, id):
 
         userinfo = self.cl.user_info(id).dict()
         data = userinfo
+
+        if self.is_bot(data):
+            return
 
         for key in data:
             if key in self.empthy_fields:
@@ -45,25 +51,26 @@ class InstaData:
         data["full_name"] = ta.normalize_all(userinfo["full_name"])
         data["biography"] = ta.normalize_all(userinfo["biography"])
 
-        data["username"] = ta.parse_direct_chars(userinfo["username"])
-        data["full_name"] = ta.parse_direct_chars(userinfo["full_name"])
-        data["biography"] = ta.parse_direct_chars(userinfo["biography"])
+        data["username"] = " " + ta.parse_direct_chars(userinfo["username"]) + " "
+        data["full_name"] = " " + ta.parse_direct_chars(userinfo["full_name"]) + " "
+        data["biography"] = " " + ta.parse_direct_chars(userinfo["biography"]) + " "
 
         data["id"] = id
         data["domains"] = ta.finddomains(data["biography"] + " " + data["full_name"])
         data["links"] = ta.findlinks(data["biography"] + " " + data["full_name"])
         data["emails"] = ta.findemails(data["biography"] + " " + data["full_name"])
-        data["keywords"] = ta.findkeywords(data["biography"] + " " + data["full_name"])
+        data["keywords"] = ta.findkeywords(data["biography"])
         data["mentioned_names"] = ta.findnames(data["biography"])
         data["latest_locations"], data["hashtags"] = self.getmediadata(id)
+        data["gender"] = ta.get_gender(data["full_name"])
 
         data["social_media_profiles"] = {
             "instagram": "https://instagram.com/" + username
         }
         for link in data["link"] + [data["external_url"]]:
             if "linktr.ee" in link:
-                data["social_media_profiles"]["linktree"] = ta.findlinks(link) or link
-                data = ls.getlinktreedata(data, ta.findlinks(link) or link)
+                data["social_media_profiles"]["linktree"] = ta.findlinks([link], rfn=True) or link
+                data = ls.getlinktreedata(data, ta.findlinks([link], rfn=True) or link)
 
         mm.upsert_user(data)
 

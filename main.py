@@ -11,7 +11,7 @@ DATA_FILENAME = "data.json"
 
 USERMAX = 5000
 LAYERMAX = 7
-SLEEP_TIME = 0.5
+SLEEP_TIME = 0.1
 
 MAIL_USERNAME = "webapp2048@gmail.com"
 MAIL_PASSWORD = ""
