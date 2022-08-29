@@ -45,3 +45,4 @@ samsumg.com
 weather.com
 stripchat.com
 ok.ru
+spotify.com

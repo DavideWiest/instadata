@@ -1,0 +1,17 @@
+pk
+username
+username_original
+full_name
+full_name_original
+biography
+biography_original
+profile_pic_url
+is_private
+is_verified
+account_type
+interop_messaging_user_fbid
+external_url
+live_subscription_status
+is_interest_account
+has_highlight_reels
+is_eligible_for_lead_center

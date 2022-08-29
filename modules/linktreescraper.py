@@ -95,7 +95,7 @@ class Linktree(object):
             url = _link["url"]
             locked = _link["locked"]
 
-            link = Link(url = url)
+            link = url
             if _link["type"] == "COMMERCE_PAY":
                 continue
             
@@ -120,7 +120,6 @@ class Linktree(object):
         account = JSON_INFO["account"]
         username = account.get("username", None)
         avatar_image = account.get("profilePictureUrl", None)
-        url = f"https://linktr.ee/{username}" if url is None else url 
         id = account.get("id", None)
         tier  = account.get("tier", None)
         is_active = account.get("is_active", None)

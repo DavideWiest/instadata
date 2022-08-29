@@ -6,10 +6,23 @@ from nltk.stem import WordNetLemmatizer
 import validators
 import nltk
 import unicodedata
-import unidecode
+import requests
 import gender_guesser.detector as genderDetector
 from modules.websiteanalyser import WebsiteAnalyser
 from modules.mailhandler import EmailValidator
+
+class EmailValidator():
+    def __init__(self):
+        self.api_key = "96124839-5566-47b0-a943-d8299839bd62"
+
+    def is_valid(self, email):
+        response = requests.get("https://isitarealemail.com/api/email/validate", params = {"email": email}).json()
+        if "status" in response:
+            return response["status"] == "valid"
+        else:
+            print("---------------------\nCRITICAL ERROR: REALEMAIL API NOT WORKING. Response:\n" + str(response) + "\n---------------------")
+            return True
+
 
 gd = genderDetector.Detector()
 wa = WebsiteAnalyser()
@@ -25,7 +38,7 @@ class TextAnalyser:
         self.lemmatizer = WordNetLemmatizer()
 
     def findlinks(self, string, rfn=False):
-        urls = re.findall(wa.url_regex, string)
+        urls = re.findall(wa.url_regex, " " + string + " ")
 
         urls = wa.sanitizeurls(urls, must_have_subroutes=True)
 
@@ -37,7 +50,7 @@ class TextAnalyser:
         return urls
 
     def finddomains(self, string, rfn=False):
-        domains = re.findall(wa.url_regex, string)
+        domains = re.findall(wa.url_regex, " " + string + " ")
 
         domains = wa.sanitizeurls(domains)
 
@@ -50,14 +63,14 @@ class TextAnalyser:
 
     def findemails(self, string, rfn=False):
         email_regex = r"[a-z0-9\.\-+_]+@[a-z0-9\.\-+_]+\.[a-z]+"
-        emails = re.findall(email_regex, string)
+        emails = re.findall(email_regex, " " + string + " ")
         for email in emails:
             try:
                 validators.email(email)
             except:
                 emails.remove(email)
             
-            if email.startswith("n@") or not wa.is_valid_tld(email) or not ev.is_valid(email):
+            if email.startswith("n@") or not ev.is_valid(email):
                 emails.remove(email)
 
         if rfn:
@@ -98,7 +111,7 @@ class TextAnalyser:
         pos = nltk.pos_tag(tokens)
         sentt = nltk.ne_chunk(pos, binary = False)
 
-        for subtree in sentt.subtrees(filter=lambda t: t.label() == 'PERSON'):
+        for subtree in sentt.subtrees(filter=lambda t: t.label() == "PERSON"):
             name = []
             person = []
 
@@ -115,7 +128,7 @@ class TextAnalyser:
         return person_list
 
     def normalize_all(self, text, replace_pynewline=True):
-        text = unicodedata.normalize('NFKD', text)
+        text = unicodedata.normalize("NFKD", text)
         if replace_pynewline:
             text = text.replace("\n", " ")
 
@@ -143,7 +156,16 @@ class TextAnalyser:
         
         return hashtags
 
+    def get_entities(self, text):
+        hashtags = []
+        for word in text.split(" "):
+            if word.startswith("@"):
+                hashtags.append(word[1:])
+        
+        return hashtags
+
     def get_gender(self, fname, country=None):
         gender = gd.get_gender(fname, country)
-        gender = gender.replace("mostly_", "")[0]
+        gender = "androgynous" if gender == "andy" else gender
+        gender = gender.replace("mostly_", "")
         return gender

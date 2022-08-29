@@ -1,25 +1,22 @@
 from modules.instadata import InstaData
-from modules.mailhandler import MailHandler
-import threading
+# from modules.mailhandler import MailHandler
+# import threading
 
-USERNAME = "davidewiest"
-PASSWORD = "Novigrad70"
-STARTUSER = "mxr1tz.06" #"cinephonics_alzey"
+USERNAME = "seauser565"
+PASSWORD = "Novigrad60"
+STARTUSER = "cinephonics_alzey"
 
 ID_FILENAME = "userids2.csv"
 DATA_FILENAME = "data.json"
 
-USERMAX = 100
+USERMAX = 40
 LAYERMAX = 3
-SLEEP_TIME = 0
+SLEEP_TIME = 6
 
-MAIL_USERNAME = "webapp2048@gmail.com"
-MAIL_PASSWORD = ""
+MAIL_USERNAME = "webapp64@outlook.com"
+MAIL_PASSWORD = "Novigrad50"
 
-mh = MailHandler(MAIL_USERNAME, MAIL_PASSWORD)
-
-thread = threading.Thread(target=mh.getcode)
-thread.start()
+# mh = MailHandler(MAIL_USERNAME, MAIL_PASSWORD)
 
 id = InstaData(USERNAME, PASSWORD, STARTUSER, LAYERMAX, USERMAX, SLEEP_TIME)
 result = id.make_list(use_file_too=True)
