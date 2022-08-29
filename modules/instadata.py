@@ -30,7 +30,7 @@ class InstaData:
         self.cl = Client()
         self.cl.login(self.USERNAME, self.PASSWORD)
 
-        # self.cl2 = get_client("resources/cache.json", self.USERNAME, self.PASSWORD)
+        self.cl2 = get_client("resources/cache.json", self.USERNAME, self.PASSWORD)
 
     def getaddress(self, lat, long):
         coordinates = lat, long
@@ -39,11 +39,13 @@ class InstaData:
 
     def adduser(self, id):
         if dh.check_in_db(id):
+            print("in db")
             return
-        if not dh.allowed_to_scrape(data):
+        data = self.cl2.user_info(id)
+        if not dh.allowed_to_store(data):
+            print("not of interest")
             return
 
-        data = self.cl2.user_info(id)
         data = dh.delete_unneeded_fields(data)
         data = dh.prepare_data(data)
         data = dh.extract_datapoints(data)
@@ -100,7 +102,10 @@ class InstaData:
         return locations, hashtags, textdata
 
     def expandreach(self, userid, layer):
+        print(self.cl.user_info(userid).dict()["is_private"])
         subfollowers = self.cl.user_followers(userid, amount=100)
+        print("subfollowers")
+        print(list(subfollowers))
         subfollowersdict = {}
         for id in subfollowers:
             subfollowersdict[id] = layer+1
@@ -109,13 +114,11 @@ class InstaData:
 
     def make_list(self, print_info=True, use_file_too=False):
         startuser_id = self.cl.user_id_from_username(self.STARTUSER)
-        print(startuser_id)
         followers = self.cl.user_followers(startuser_id)
-        print(followers)
         totaluserlist = {}
         layer = 1
 
-        for follower in list(followers):
+        for follower in list(followers)[:15]:
             totaluserlist[follower] = 1
 
         if use_file_too:
@@ -124,13 +127,12 @@ class InstaData:
 
         breakwhile = False
         while len(totaluserlist) < self.USERMAX and layer < self.LAYERMAX:
-            print(2.5)
             lastlayerlist = [k for k, v in totaluserlist.items() if v == layer]
-            print(lastlayerlist)
 
             for followerid in lastlayerlist:
                 print(2.6)
                 new_user_ids = self.expandreach(followerid, layer)
+                print(new_user_ids)
                 totaluserlist = {**new_user_ids, **totaluserlist}
 
                 if new_user_ids != {}:
@@ -138,8 +140,9 @@ class InstaData:
                         self.adduser(userid)
 
                 if use_file_too:
-                    with open("ids.txt", "a", encoding="utf-8") as f:
-                        f.write("\n" + "\n".join([f"{k},{v}" for k, v in new_user_ids.items()]))
+                    if new_user_ids != {}:
+                        with open("ids.txt", "a", encoding="utf-8") as f:
+                            f.write("\n" + "\n".join([f"{k},{v}" for k, v in new_user_ids.items()]))
 
                 if not (len(totaluserlist) < self.USERMAX and layer < self.LAYERMAX):
                     breakwhile = True

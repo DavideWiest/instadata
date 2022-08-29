@@ -59,7 +59,8 @@ class DataHandler():
         return data
 
     def check_is_bot(self, data):
-        if data["is_verified"]:
+        if data["is_verified"] == True:
+            print("is verified")
             return False
         botscore = 0
         botscore += 1 if (data["follower_count"] / data["following_count"] + 1) > 4 else 0
@@ -68,6 +69,8 @@ class DataHandler():
         botscore += 1 if data["media_count"] < 10 else 0
         botscore += 1 if data["has_anonymous_profile_picture"] else 0
         botscore += 1 if data["is_new_to_instagram"] else 0
+        print("botscore")
+        print(botscore)
         return botscore >= 3
     
     def check_is_momorialized(self, is_memorialized):
@@ -81,8 +84,11 @@ class DataHandler():
             delta = datetime.now() - in_db["date_last_updated_at"].strptime("%d-%m-%Y, %H:%M:%S")
             return delta.days < 30
 
-    def allowed_to_scrape(self, data):
-        return self.check_is_momorialized(data["user"]["is_memorialized"]) and self.check_is_bot(data) and self.check_is_in_db(data)
+    def allowed_to_store(self, data):
+        a = self.check_is_bot(data)
+        b = self.check_is_momorialized(data["user"]["is_memorialized"])
+        return a and b
+        # return self.check_is_momorialized(data["user"]["is_memorialized"]) and self.check_is_bot(data)
 
     def complete_social_profile(self, data):
         data["social_media_profiles"] = {
