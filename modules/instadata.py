@@ -87,7 +87,7 @@ class InstaData:
                     time.sleep(self.SLEEP_TIME)
                 
         if self.LONG_SLEEP_TIME != ():
-            if random.randrange(1000) == 69:
+            if random.randrange(1750) == 69:
                 time.sleep(random.randrange(self.LONG_SLEEP_TIME[0], self.LONG_SLEEP_TIME[1]))
         
 
@@ -189,7 +189,7 @@ class InstaData:
                     time.sleep(self.SLEEP_TIME)
                 
                 if self.LONG_SLEEP_TIME != ():
-                    if random.randrange(1000) == 69:
+                    if random.randrange(1750) == 69:
                         time.sleep(random.randrange(self.LONG_SLEEP_TIME[0], self.LONG_SLEEP_TIME[1]))
                 
             if breakwhile:
@@ -222,7 +222,7 @@ class InstaData:
                     time.sleep(self.SLEEP_TIME)
                 
             if self.LONG_SLEEP_TIME != ():
-                if random.randrange(1000) == 69:
+                if random.randrange(1750) == 69:
                     time.sleep(random.randrange(self.LONG_SLEEP_TIME[0], self.LONG_SLEEP_TIME[1]))
             
 

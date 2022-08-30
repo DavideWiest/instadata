@@ -13,7 +13,7 @@ STARTUSER = "cinephonics_alzey"
 USERMAX = 50
 LAYERMAX = 3
 SLEEP_TIME = 8
-LONG_SLEEP_TIME = (60 * 60 * 0.5, 60 * 60 * 3)
+LONG_SLEEP_TIME = (60 * 60 * 0.5, 60 * 60 * 1.75)
 
 mm = MongoManager()
 ta = TextAnalyser()
