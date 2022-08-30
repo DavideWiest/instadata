@@ -87,7 +87,7 @@ class InstaData:
                     time.sleep(self.SLEEP_TIME)
                 
         if self.LONG_SLEEP_TIME != ():
-            if random.randrange(100) == 69:
+            if random.randrange(1000) == 69:
                 time.sleep(random.randrange(self.LONG_SLEEP_TIME[0], self.LONG_SLEEP_TIME[1]))
         
 
@@ -121,7 +121,7 @@ class InstaData:
                             hashtags[ht] = 1
                 
                 if self.SLEEP_TIME != 0:
-                    time.sleep(self.SLEEP_TIME / 5)
+                    time.sleep(self.SLEEP_TIME / 2)
             except TypeError:
                 print("TYPEERROR IN get_mediadata")
                 print(traceback.format_exc())
@@ -189,7 +189,7 @@ class InstaData:
                     time.sleep(self.SLEEP_TIME)
                 
                 if self.LONG_SLEEP_TIME != ():
-                    if random.randrange(100) == 69:
+                    if random.randrange(1000) == 69:
                         time.sleep(random.randrange(self.LONG_SLEEP_TIME[0], self.LONG_SLEEP_TIME[1]))
                 
             if breakwhile:
@@ -222,7 +222,7 @@ class InstaData:
                     time.sleep(self.SLEEP_TIME)
                 
             if self.LONG_SLEEP_TIME != ():
-                if random.randrange(100) == 69:
+                if random.randrange(1000) == 69:
                     time.sleep(random.randrange(self.LONG_SLEEP_TIME[0], self.LONG_SLEEP_TIME[1]))
             
 
