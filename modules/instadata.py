@@ -1,4 +1,5 @@
 from instagrapi import Client
+from instagrapi.exceptions import RateLimitError
 import time
 from modules.clientgetter import get_client
 from geopy.geocoders import Nominatim
@@ -6,7 +7,7 @@ from datetime import datetime
 import langid
 import traceback
 import random
-
+import sys
 
 
 class InstaData:
@@ -26,8 +27,14 @@ class InstaData:
 
         self.locator = Nominatim(user_agent="myGeocoder")
 
-        self.cl = Client()
-        self.cl.login(self.USERNAME, self.PASSWORD)
+        try:
+            self.cl = Client()
+            self.cl.login(self.USERNAME, self.PASSWORD)
+            self.cl.user_id_from_username(self.STARTUSER)
+        except RateLimitError:
+            print("ERROR in self.cl.login")
+            print("RATELIMITERROR: Wait a few hours before trying again")
+            sys.exit(0)
 
         self.cl2 = get_client("resources/cache.json", self.USERNAME, self.PASSWORD)
 
@@ -76,9 +83,13 @@ class InstaData:
 
         self.mm.upsert_user(data)
 
-        if sleep:
-            if self.SLEEP_TIME != 0:
-                time.sleep(self.SLEEP_TIME)
+        if self.SLEEP_TIME != 0:
+                    time.sleep(self.SLEEP_TIME)
+                
+        if self.LONG_SLEEP_TIME != ():
+            if random.randrange(100) == 69:
+                time.sleep(random.randrange(self.LONG_SLEEP_TIME[0], self.LONG_SLEEP_TIME[1]))
+        
 
     def get_mediadata(self, userid, number=8):
         medias = self.cl.user_medias(userid, number)
@@ -178,7 +189,8 @@ class InstaData:
                     time.sleep(self.SLEEP_TIME)
                 
                 if self.LONG_SLEEP_TIME != ():
-                    time.sleep(random.randrange(self.LONG_SLEEP_TIME[0], self.LONG_SLEEP_TIME[1]))
+                    if random.randrange(100) == 69:
+                        time.sleep(random.randrange(self.LONG_SLEEP_TIME[0], self.LONG_SLEEP_TIME[1]))
                 
             if breakwhile:
                 break
@@ -205,8 +217,13 @@ class InstaData:
 
             if print_info:
                 print(f"User with the id {id} added to DB. [{unpop_ids.index(id)+1}/{len(unpop_ids)}]")
+            
             if self.SLEEP_TIME != 0:
-                time.sleep(self.SLEEP_TIME)
-
+                    time.sleep(self.SLEEP_TIME)
+                
+            if self.LONG_SLEEP_TIME != ():
+                if random.randrange(100) == 69:
+                    time.sleep(random.randrange(self.LONG_SLEEP_TIME[0], self.LONG_SLEEP_TIME[1]))
+            
 
 
