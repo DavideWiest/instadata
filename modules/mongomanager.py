@@ -30,14 +30,15 @@ class MongoManager:
 
         if backup_host == "localhost":
             backup_uri = f"mongodb://{backup_host}:{backup_port}"
+            print(backup_uri)
             self.backup_client = pymongo.MongoClient(backup_uri)
-            self.backup_db = self.client[backup_db_name]
+            self.backup_db = self.backup_client[backup_db_name]
         else:
             backup_user = os.environ.get("con_db_username") if backup_user == None else user
             backup_password = os.environ.get("con_db_password") if backup_password == None else password
             backup_uri = f"mongodb://{backup_user}:{backup_password}@{backup_host}:{backup_port}"
             self.backup_client = pymongo.MongoClient(backup_uri)
-            self.backup_db = self.client[backup_db_name]
+            self.backup_db = self.backup_client[backup_db_name]
 
         self.pcol = self.db[primary_collection]
         self.bcol = self.backup_db[backup_primary_collection]
