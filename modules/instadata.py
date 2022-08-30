@@ -1,29 +1,25 @@
 from instagrapi import Client
 import time
-from modules.textanalyser import TextAnalyser
-from modules.mongomanager import MongoManager
-from modules.linktreescraper import LinktreeScraper
-from modules.datahandler import DataHandler
 from modules.clientgetter import get_client
-import geopy
 from geopy.geocoders import Nominatim
-from geopy.extra.rate_limiter import RateLimiter
 from datetime import datetime
 import langid
 
-mm = MongoManager()
-ta = TextAnalyser()
-ls = LinktreeScraper()
-dh = DataHandler(mm, ta, ls)
+
 
 class InstaData:
-    def __init__(self, username, password, startuser, layermax, usermax, sleep_time):
+    def __init__(self, username, password, startuser, layermax, usermax, sleep_time, mm, ta, ls, dh):
         self.USERNAME = username
         self.PASSWORD = password
         self.STARTUSER = startuser
         self.LAYERMAX = layermax
         self.USERMAX = usermax
         self.SLEEP_TIME = sleep_time
+
+        self.mm = mm
+        self.ta = ta
+        self.ls = ls
+        self.dh = dh
 
         self.locator = Nominatim(user_agent="myGeocoder")
 
@@ -38,35 +34,45 @@ class InstaData:
         return location.address
 
     def adduser(self, id):
-        if dh.check_in_db(id):
-            print("in db")
+        if self.dh.check_in_db(id):
             return
-        data = self.cl2.user_info(id)
-        if not dh.allowed_to_store(data):
-            print("not of interest")
+        data = self.cl2.user_info(id)["user"]
+        is_no_bot, botscore = self.dh.check_is_no_bot(data)
+        if not is_no_bot:
+            botdata = self.dh.get_botdata(data, botscore)
+            self.mm.upsert_user(botdata)
             return
+        elif data.get("is_memorialized", False):
+            botdata = self.dh.get_memorializeddata(data)
+            self.mm.upsert_user(botdata)
+            return
+        
+        data["applicable"] = [True, "USER" if data.get("is_busines", False) == True else "BUSINESS"]
 
-        data = dh.delete_unneeded_fields(data)
-        data = dh.prepare_data(data)
-        data = dh.extract_datapoints(data)
-        data = dh.connect_socials(data)
-        data = dh.prepare_socialdatap(data)
+        data = self.dh.delete_unneeded_fields(data)
+        data = self.dh.prepare_data(data)
+        data = self.dh.extract_datapoints(data)
+        data = self.dh.connect_socials(data)
+        data = self.dh.prepare_socialdata(data)
 
         textdata = ""
         data["media_latest_locations"] = {}
         data["media_hashtags"] = {}
-        data["media_latest_locations_license"] = ""
+        data["media_latest_locations_license"] = "None"
 
-        if data["classification_level"] <= 3:
+        if data["classification_level"] >= 3:
             data["media_latest_locations"], data["media_hashtags"], textdata = self.getmediadata(id)
             data["media_latest_locations_license"] = "Data © OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright"
 
-        data["lowlevel_keywords"] = ta.get_keywords([(data["biography"], 5), (textdata, 2)])
+        data["lowlevel_keywords"] = self.ta.get_keywords([(data["biography"], 5), (textdata, 2)])
         data["language"] = langid.classify(textdata + " " + data["biography"])[0]
 
-        data = dh.restruture_data(data)
+        data["populized"] = True
+        data["date_last_upserted_at"] = datetime.now().strftime("%d-%m-%Y, %H:%M:%S")
 
-        mm.upsert_user(data)
+        data = self.dh.restruture_data(data)
+
+        self.mm.upsert_user(data)
 
     def getmediadata(self, userid, number=8):
         medias = self.cl.user_medias(userid, number)
@@ -87,7 +93,7 @@ class InstaData:
                 else:
                     locations[medialoc["name"]] = [1, (address, medialoc["lat"], medialoc["lng"], loctime)]
 
-                mediahts = ta.gethashtags(media["caption_text"])
+                mediahts = self.ta.gethashtags(media["caption_text"])
                 for ht in mediahts:
                     if ht in hashtags:
                         hashtags[ht] += 1
@@ -97,7 +103,7 @@ class InstaData:
                 if self.SLEEP_TIME != 0:
                     time.sleep(self.SLEEP_TIME / 5)
             except Exception as e:
-                print(f"Error in expandreach: " + str(e))
+                print(f"Error in mediadata: " + str(e))
 
         return locations, hashtags, textdata
 
@@ -161,23 +167,26 @@ class InstaData:
 
 
     def populize_all(self):
-        unpop_ids = mm.get_all_unpopulized()
+        unpop_ids = self.mm.get_all_unpopulized()
 
         for id in unpop_ids:
             if self.SLEEP_TIME != 0:
                 time.sleep(self.SLEEP_TIME)
             self.adduser(id)
 
-    def populize_all_from_file(self, filename="ids.txt"):
+    def populize_all_from_file(self, filename="ids.txt", print_info=True):
         with open(filename, "a", encoding="utf-8") as f:
             unpop_ids = f.read().split("\n")
 
         unpop_ids = [int(a.split(",")[0]) for a in unpop_ids if a != ""]
 
         for id in unpop_ids:
+            self.adduser(id)
+
+            if print_info:
+                print(f"User with the id {id} added to DB. [{unpop_ids.index(id)+1}/{len(unpop_ids)}]")
             if self.SLEEP_TIME != 0:
                 time.sleep(self.SLEEP_TIME)
-            self.adduser(id)
 
 
 

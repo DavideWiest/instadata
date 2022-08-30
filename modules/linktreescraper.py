@@ -5,9 +5,7 @@ import asyncio
 import aiohttp
 from bs4 import BeautifulSoup
 import json
-from modules.textanalyser import TextAnalyser
 
-ta = TextAnalyser()
 
 @dataclass
 class Link:
@@ -158,7 +156,8 @@ async def main(url):
     return userobj
 
 class LinktreeScraper:
-    def __init__(self):
+    def __init__(self, ta):
+        self.ta = ta
         pass
 
     def get_linktree(self, url):
@@ -172,8 +171,11 @@ class LinktreeScraper:
         for lt_link in data["linktreedata"]["links"]:
             data["links"].append(lt_link[1])
 
-        if data["linktreedata"]["description"] != None:
-            data["linktreedata"]["description"] = ta.normalize_all(data["linktreedata"]["description"])
-            data["linktreedata"]["description"] = ta.parse_direct_chars(data["linktreedata"]["description"])
+        data["linktreedata"]["description_original"] = data["linktreedata"]["description"]
+        data["linktreedata"]["description_normalized"] = None
+
+        if data["linktreedata"]["description"] not in ("", None):
+            data["linktreedata"]["description_normalized"] = self.ta.normalize_all(data["linktreedata"]["description"])
+            data["linktreedata"]["description_normalized"] = self.ta.parse_direct_chars(data["linktreedata"]["description"])
 
         return data

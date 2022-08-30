@@ -58,37 +58,51 @@ class DataHandler():
         data = {k:v for k, v in data.items() if k not in self.unneeded_fields}
         return data
 
-    def check_is_bot(self, data):
-        if data["is_verified"] == True:
-            print("is verified")
-            return False
+    def check_is_no_bot(self, data):
+        if data.get("is_verified", False) == True:
+            return True
+        if "botscore" in data:
+            return data["botscore"] < 3
         botscore = 0
-        botscore += 1 if (data["follower_count"] / data["following_count"] + 1) > 4 else 0
-        botscore += 1 if data["follower_count"] < 20 else 0
-        botscore += 1 if data["biography"] == "" else 0
-        botscore += 1 if data["media_count"] < 10 else 0
-        botscore += 1 if data["has_anonymous_profile_picture"] else 0
-        botscore += 1 if data["is_new_to_instagram"] else 0
-        print("botscore")
-        print(botscore)
-        return botscore >= 3
+        botscore += 1 if (data.get("follower_count", 0) / data.get("following_count", 0) + 1) > 4 else 0
+        botscore += 1 if data.get("follower_count", 0) < 20 else 0
+        botscore += 1 if data.get("biography", "") == "" else 0
+        botscore += 1 if data.get("media_count", 0) < 10 else 0
+        botscore += 1 if data.get("has_anonymous_profile_picture", True) else 0
+        botscore += 1 if data.get("is_new_to_instagram", False) else 0
+        return (botscore < 3, botscore)
     
-    def check_is_momorialized(self, is_memorialized):
-        return is_memorialized
+    def allowed_to_store(self, data):
+        return self.check_is_no_bot(data) and not data["is_memorialized"]
 
     def check_in_db(self, id):
         in_db = self.mm.is_in_db(id)
         if in_db == None:
             return False
         else:
-            delta = datetime.now() - in_db["date_last_updated_at"].strptime("%d-%m-%Y, %H:%M:%S")
+            delta = datetime.now() - datetime.strptime(in_db["date_last_upserted_at"], "%d-%m-%Y, %H:%M:%S")
+            if not in_db["populized"]:
+                return False
             return delta.days < 30
 
-    def allowed_to_store(self, data):
-        a = self.check_is_bot(data)
-        b = self.check_is_momorialized(data["user"]["is_memorialized"])
-        return a and b
-        # return self.check_is_momorialized(data["user"]["is_memorialized"]) and self.check_is_bot(data)
+    def get_botdata(self, data, botscore):
+        botdata = {
+            "insta_id": data["pk"],
+            "applicable": [False, "BOT"],
+            "date_last_upserted_at": data["date_last_upserted_at"],
+            "populized": True,
+            "classification_level": 0
+        }
+        return botdata
+    
+    def get_memorializeddata(self, data):
+        botdata = {
+            "insta_id": data["pk"],
+            "applicable": [False, "DEAD"],
+            "date_last_upserted_at": data["date_last_upserted_at"],
+            "populized": True,
+            "classification_level": 0
+        }
 
     def complete_social_profile(self, data):
         data["social_media_profiles"] = {
@@ -119,7 +133,7 @@ class DataHandler():
         data["biography"] = self.ta.parse_direct_chars(data["biography"])
 
         data["id"] = id
-        data["date_last_updated_at"] = datetime.now().strftime("%d-%m-%Y, %H:%M:%S")
+        data["date_last_upserted_at"] = datetime.now().strftime("%d-%m-%Y, %H:%M:%S")
 
         return data
 
@@ -168,9 +182,9 @@ class DataHandler():
         data["phone_numbers"] = list(dict.fromkeys(data["phone_numbers"]))
 
         account_type_dict = {
-            0: "normal/consumer",
-            1: "business",
-            2: "creative/self-employed",
+            1: "normal/consumer",
+            2: "business",
+            3: "creative/self-employed",
             None: ""
         }
         data["account_type"] = account_type_dict[data["account_type"]]
@@ -207,6 +221,7 @@ class DataHandler():
         for to_key, from_key in self.datamigrationdicts["insta_datamigrationdict"].items():
             data["social_profiles"]["instagram"][to_key] = data.get(from_key, None)
         
+        data["social_profiles"]["instagram"]["stats"] = {}
         for to_key, from_key in self.datamigrationdicts["insta_datastatsmigrationdict"].items():
             data["social_profiles"]["instagram"]["stats"][to_key] = data.get(from_key, None)
 

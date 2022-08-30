@@ -43,19 +43,19 @@ class MongoManager:
         self.bcol = self.backup_db[backup_primary_collection]
         
     def upsert_user(self, data):
-        self.pcol.update_one(filter={"id": data["id"]}, update={"$set": data}, upsert=True)
-        self.bcol.update_one(filter={"id": data["id"]}, update={"$set": data}, upsert=True)
+        self.pcol.update_one(filter={"insta_id": data["insta_id"]}, update={"$set": data}, upsert=True)
+        self.bcol.update_one(filter={"insta_id": data["insta_id"]}, update={"$set": data}, upsert=True)
 
     def insert_empthy_user(self, id):
-        if list(self.pcol.find({"id": id})) == []:
-            self.pcol.insert_one({"id": id})
+        if list(self.pcol.find({"insta_id": id})) == []:
+            self.pcol.insert_one({"insta_id": id})
         
-        if list(self.bcol.find({"id": id})) == []:
-            self.bcol.insert_one({"id": id})
+        if list(self.bcol.find({"insta_id": id})) == []:
+            self.bcol.insert_one({"insta_id": id})
 
     def get_all_unpopulized(self):
-        unpop_docs = list(self.pcol.find({"pk": {"$exists": False}}, {"_id": False, "id": True}))
-        return [doc["id"] for doc in unpop_docs]
+        unpop_docs = list(self.pcol.find({"populized": {"$exists": False}}, {"_id": False, "insta_id": True}))
+        return [doc["insta_id"] for doc in unpop_docs]
 
     def export_to_json(self, filename):
         cursor = self.pcol.find({})
@@ -63,5 +63,5 @@ class MongoManager:
             json.dump(json.loads(dumps(cursor)), file)
 
     def is_in_db(self, id):
-        return self.pcol.find_one({"id": id}, {"_id": False, "id": True, "date_last_updated_at": True})
-        
+        return self.pcol.find_one({"insta_id": id}, {"_id": False, "insta_id": True, "date_last_upserted_at": True, "populized": True})
+    

@@ -145,6 +145,8 @@ class TextAnalyser:
         for char_in, char_out in parse_chars:
             text = text.replace(char_in, char_out)
 
+        return text
+
     def decode_unicode_esc(self, text):
         return str(text)
 

@@ -34,7 +34,7 @@
             ["gender", "gender"],
             ["is_business", "is_business"],
             ["category", "category"],
-            ["account_type", "account_type"]
+            ["potential_account_type", "account_type"]
         ],
         "location": [
             ["address_street", "address_street"],
@@ -59,6 +59,9 @@
         ["insta_id", "pk"],
         ["classification_level", "classification_level"],
         ["category", "category"],
-        ["social_profiles", "social_profiles"]
+        ["social_profiles", "social_profiles"],
+        ["populized", "populized"],
+        ["date_last_upserted_at", "date_last_upserted_at"],
+        ["applicable", "applicable"]
     ]
 }
