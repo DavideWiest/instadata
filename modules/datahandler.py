@@ -206,7 +206,6 @@ class DataHandler():
 
         return data
 
-
     def connect_socials(self, data):
         data["social_profiles"] = {}
         data["social_profiles"]["instagram"] = {"link": "https://instagram.com/" + data["username"]}
