@@ -8,7 +8,7 @@ import time
 
 USERNAME = "seauser565"
 PASSWORD = "seauser656"
-STARTUSER = "cinephonics_alzey"
+STARTUSER = "crcr_studio" # "cinephonics_alzey"
 
 USERMAX = 50
 LAYERMAX = 3

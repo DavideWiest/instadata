@@ -38,7 +38,7 @@ class InstaData:
 
         self.cl2 = get_client("resources/cache.json", self.USERNAME, self.PASSWORD)
 
-    def getaddress(self, lat, long):
+    def get_address(self, lat, long):
         coordinates = lat, long
         location = self.locator.reverse(coordinates)
         return location.address
@@ -102,7 +102,7 @@ class InstaData:
                 
                 medialoc = media.get("location", None)
                 if medialoc != None:
-                    address = self.getaddress(medialoc["lat"], medialoc["lng"])
+                    address = self.get_address(medialoc["lat"], medialoc["lng"])
                 
                     loctime = media["taken_at"].strftime("%d-%m-%Y, %H:%M:%S")
                     
@@ -113,7 +113,7 @@ class InstaData:
 
                 if "caption_text" in media and media.get("caption_text") not in ("", None):
                     textdata += " " + " ".join(media["caption_text"].split(" ")[:10])
-                    mediahts = self.ta.gethashtags(media["caption_text"])
+                    mediahts = self.ta.get_hashtags(media["caption_text"])
                     for ht in mediahts:
                         if ht in hashtags:
                             hashtags[ht] += 1

@@ -183,7 +183,7 @@ class DataHandler():
             data["phone_numbers"].append(data["contact_phone_number"])
         # data["phone_numbers"] = list(dict.fromkeys(data["phone_numbers"]))
 
-        for pn in data["phone_numbers"].copy().reverse():
+        for pn in data["phone_numbers"].copy()[::-1]:
             if any([i.endswith(pn) for i in data["phone_numbers"]]):
                 data["phone_numbers"].remove(pn)
 

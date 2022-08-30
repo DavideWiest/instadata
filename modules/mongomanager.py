@@ -30,7 +30,6 @@ class MongoManager:
 
         if backup_host == "localhost":
             backup_uri = f"mongodb://{backup_host}:{backup_port}"
-            print(backup_uri)
             self.backup_client = pymongo.MongoClient(backup_uri)
             self.backup_db = self.backup_client[backup_db_name]
         else:
