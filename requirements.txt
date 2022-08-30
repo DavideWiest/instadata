@@ -9,4 +9,7 @@ pymongo==4.1.1
 unicodedata2==14.0.0
 validators==0.20.0
 langid==1.1.6
+typing_extensions==4.3.0
+aiohttp==3.8.1
+beautifulsoup4==4.11.1
 git+https://git@github.com/ping/instagram_private_api.git@1.6.0

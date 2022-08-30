@@ -12,32 +12,22 @@ STARTUSER = "cinephonics_alzey"
 
 USERMAX = 50
 LAYERMAX = 3
-SLEEP_TIME = 6
+SLEEP_TIME = 8
+LONG_SLEEP_TIME = (60 * 60 * 0.5, 60 * 60 * 3)
 
 mm = MongoManager()
 ta = TextAnalyser()
 ls = LinktreeScraper(ta)
 dh = DataHandler(mm, ta, ls)
-# mh = MailHandler(MAIL_USERNAME, MAIL_PASSWORD)
 
-start = time.time()
-id = InstaData(USERNAME, PASSWORD, STARTUSER, LAYERMAX, USERMAX, SLEEP_TIME, mm, ta, ls, dh)
-end = time.time()
-print(f"Logging in took {end - start:.2f} seconds")
+id = InstaData(USERNAME, PASSWORD, STARTUSER, LAYERMAX, USERMAX, SLEEP_TIME, LONG_SLEEP_TIME, mm, ta, ls, dh)
+
 start = time.time()
 id.adduser(1207220012)
 id.adduser(27551593449)
 id.adduser(3121589379)
 
 end = time.time()
-print(f"Getting 3 accounts data {end - start} seconds")
-print(f"Avg time: {(end - start) / 3:.2f} seconds")
+print(f"Getting {USERMAX} accounts data took {end - start} seconds")
+print(f"Average time per account: {(end - start) / USERMAX:.2f} seconds")
 
-start = time.time()
-id.adduser(27551593449)
-end = time.time()
-print(f"Skipping an account took {end - start:.2f} seconds")
-
-
-# id.adduser(1207220012)
-# result = id.make_list(use_file_too=True)

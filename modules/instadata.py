@@ -4,17 +4,20 @@ from modules.clientgetter import get_client
 from geopy.geocoders import Nominatim
 from datetime import datetime
 import langid
+import traceback
+import random
 
 
 
 class InstaData:
-    def __init__(self, username, password, startuser, layermax, usermax, sleep_time, mm, ta, ls, dh):
+    def __init__(self, username, password, startuser, layermax, usermax, sleep_time, long_sleep_time, mm, ta, ls, dh):
         self.USERNAME = username
         self.PASSWORD = password
         self.STARTUSER = startuser
         self.LAYERMAX = layermax
         self.USERMAX = usermax
         self.SLEEP_TIME = sleep_time
+        self.LONG_SLEEP_TIME = long_sleep_time
 
         self.mm = mm
         self.ta = ta
@@ -63,7 +66,7 @@ class InstaData:
         data["media_latest_locations_license"] = "None"
 
         if data["classification_level"] >= 3:
-            data["media_latest_locations"], data["media_hashtags"], textdata = self.getmediadata(id)
+            data["media_latest_locations"], data["media_hashtags"], textdata = self.get_mediadata(id)
             data["media_latest_locations_license"] = "Data © OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright"
 
         data["lowlevel_keywords"] = self.ta.get_keywords([(data["biography"], 5), (textdata, 2)])
@@ -77,7 +80,7 @@ class InstaData:
             if self.SLEEP_TIME != 0:
                 time.sleep(self.SLEEP_TIME)
 
-    def getmediadata(self, userid, number=8):
+    def get_mediadata(self, userid, number=8):
         medias = self.cl.user_medias(userid, number)
         locations = {}
         hashtags = {}
@@ -85,30 +88,35 @@ class InstaData:
         for media in medias:
             try:
                 media = media.dict()
-                textdata += " " + " ".join(media["caption_text"].split(" ")[:10])
-                medialoc = media["location"]
-                address = self.getaddress(medialoc["lat"], medialoc["lng"])
                 
-                loctime = media["taken_at"].strftime("%d-%m-%Y, %H:%M:%S")
+                medialoc = media.get("location", None)
+                if medialoc != None:
+                    address = self.getaddress(medialoc["lat"], medialoc["lng"])
                 
-                if medialoc["name"] in locations:
-                    locations[medialoc["name"]] = [locations[medialoc["name"]][0]+1, locations[medialoc["name"]][1]]
-                else:
-                    locations[medialoc["name"]] = [1, (address, medialoc["lat"], medialoc["lng"], loctime)]
-
-                mediahts = self.ta.gethashtags(media["caption_text"])
-                for ht in mediahts:
-                    if ht in hashtags:
-                        hashtags[ht] += 1
+                    loctime = media["taken_at"].strftime("%d-%m-%Y, %H:%M:%S")
+                    
+                    if medialoc["name"] in locations:
+                        locations[medialoc["name"]] = [locations[medialoc["name"]][0]+1, (locations[medialoc["name"]][1][0], locations[medialoc["name"]][1][1], locations[medialoc["name"]][1][2].append(loctime))]
                     else:
-                        hashtags[ht] = 1
+                        locations[medialoc["name"]] = [1, (address, medialoc["lat"], medialoc["lng"], [loctime])]
+
+                if "caption_text" in media and media.get("caption_text") not in ("", None):
+                    textdata += " " + " ".join(media["caption_text"].split(" ")[:10])
+                    mediahts = self.ta.gethashtags(media["caption_text"])
+                    for ht in mediahts:
+                        if ht in hashtags:
+                            hashtags[ht] += 1
+                        else:
+                            hashtags[ht] = 1
                 
                 if self.SLEEP_TIME != 0:
                     time.sleep(self.SLEEP_TIME / 5)
             except TypeError:
-                pass
+                print("TYPEERROR IN get_mediadata")
+                print(traceback.format_exc())
             except Exception as e:
-                print(f"Error in mediadata: " + str(e))
+                print(f"ERROR IN get_mediadata")
+                print(traceback.format_exc())
 
         return locations, hashtags, textdata
 
@@ -148,7 +156,11 @@ class InstaData:
 
                 if new_user_ids != {}:
                     for userid in new_user_ids:
-                        self.adduser(userid)
+                        try:
+                            self.adduser(userid)
+                        except:
+                            print("ERROR IN adduser")
+                            print(traceback.format_exc())
 
                 if use_file_too:
                     if new_user_ids != {}:
@@ -164,6 +176,9 @@ class InstaData:
 
                 if self.SLEEP_TIME != 0:
                     time.sleep(self.SLEEP_TIME)
+                
+                if self.LONG_SLEEP_TIME != ():
+                    time.sleep(random.randrange(self.LONG_SLEEP_TIME[0], self.LONG_SLEEP_TIME[1]))
                 
             if breakwhile:
                 break

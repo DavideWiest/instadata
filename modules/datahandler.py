@@ -52,6 +52,7 @@ class DataHandler():
         userlevel += 1 * len(data["phone_numbers"])
         userlevel += 2 * len([v for k, v in data["domains"].items() if v == 1])
         userlevel += 1 * len([v for k, v in data["links"].items() if v == 1])
+        userlevel += 2 if data["follower_count"] >= 10000 else 0
         return userlevel
 
     def delete_unneeded_fields(self, data):
@@ -182,7 +183,7 @@ class DataHandler():
             data["phone_numbers"].append(data["contact_phone_number"])
         # data["phone_numbers"] = list(dict.fromkeys(data["phone_numbers"]))
 
-        for pn in data["phone_numbers"].copy().list():
+        for pn in data["phone_numbers"].copy().reverse():
             if any([i.endswith(pn) for i in data["phone_numbers"]]):
                 data["phone_numbers"].remove(pn)
 

@@ -42,7 +42,8 @@
             ["city_name", "city_name"],
             ["zip", "zip"],
             ["lat", "latitude"],
-            ["long", "longitude"]
+            ["long", "longitude"],
+            ["media_latest_locations", "media_latest_locations"]
         ],
         "additional_ig_data": [
             ["hashtags", "hashtags"],
