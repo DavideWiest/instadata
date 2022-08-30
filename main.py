@@ -7,7 +7,7 @@ from modules.instadata import InstaData
 import time
 
 USERNAME = "seauser565"
-PASSWORD = "Novigrad60"
+PASSWORD = "seauser656"
 STARTUSER = "cinephonics_alzey"
 
 USERMAX = 50

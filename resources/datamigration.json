@@ -25,7 +25,8 @@
             ["emails", "emails"],
             ["domains", "domains"],
             ["links", "links"],
-            ["phone_numbers", "phone_numbers"]
+            ["phone_numbers", "phone_numbers"],
+            ["public_phone_country_code", "public_phone_country_code"]
         ],
         "base_infos": [
             ["full_name", "full_name"],

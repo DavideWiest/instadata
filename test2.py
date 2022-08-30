@@ -3,7 +3,7 @@ import json
 import time
 
 username = 'seauser565'
-password = 'Novigrad60'
+password = 'seauser656'
 
 web_api = Client(username=username, password=password, auto_patch=True, drop_incompat_keys=False)
 

@@ -54,7 +54,7 @@ class MongoManager:
             self.bcol.insert_one({"insta_id": id})
 
     def get_all_unpopulized(self):
-        unpop_docs = list(self.pcol.find({"populized": {"$exists": False}}, {"_id": False, "insta_id": True}))
+        unpop_docs = list(self.pcol.find({"populized": False}, {"_id": False, "insta_id": True, "applicable": True}))
         return [doc["insta_id"] for doc in unpop_docs]
 
     def export_to_json(self, filename):

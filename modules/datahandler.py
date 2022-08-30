@@ -85,7 +85,7 @@ class DataHandler():
                 return False
             return delta.days < 30
 
-    def get_botdata(self, data, botscore):
+    def get_botdata(self, data):
         botdata = {
             "insta_id": data["pk"],
             "applicable": [False, "BOT"],
@@ -96,13 +96,14 @@ class DataHandler():
         return botdata
     
     def get_memorializeddata(self, data):
-        botdata = {
+        memorializeddata = {
             "insta_id": data["pk"],
             "applicable": [False, "DEAD"],
             "date_last_upserted_at": data["date_last_upserted_at"],
             "populized": True,
             "classification_level": 0
         }
+        return memorializeddata
 
     def complete_social_profile(self, data):
         data["social_media_profiles"] = {
@@ -179,7 +180,11 @@ class DataHandler():
             data["phone_numbers"].append(data["public_phone_number"])
         if data.get("contact_phone_number") not in ("", None):
             data["phone_numbers"].append(data["contact_phone_number"])
-        data["phone_numbers"] = list(dict.fromkeys(data["phone_numbers"]))
+        # data["phone_numbers"] = list(dict.fromkeys(data["phone_numbers"]))
+
+        for pn in data["phone_numbers"].copy().list():
+            if any([i.endswith(pn) for i in data["phone_numbers"]]):
+                data["phone_numbers"].remove(pn)
 
         account_type_dict = {
             1: "normal/consumer",

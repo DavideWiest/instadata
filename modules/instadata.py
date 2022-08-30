@@ -33,7 +33,7 @@ class InstaData:
         location = self.locator.reverse(coordinates)
         return location.address
 
-    def adduser(self, id):
+    def adduser(self, id, sleep=False):
         if self.dh.check_in_db(id):
             return
         data = self.cl2.user_info(id)["user"]
@@ -48,6 +48,8 @@ class InstaData:
             return
         
         data["applicable"] = [True, "USER" if data.get("is_busines", False) == True else "BUSINESS"]
+        data["populized"] = True
+        data["date_last_upserted_at"] = datetime.now().strftime("%d-%m-%Y, %H:%M:%S")
 
         data = self.dh.delete_unneeded_fields(data)
         data = self.dh.prepare_data(data)
@@ -67,12 +69,13 @@ class InstaData:
         data["lowlevel_keywords"] = self.ta.get_keywords([(data["biography"], 5), (textdata, 2)])
         data["language"] = langid.classify(textdata + " " + data["biography"])[0]
 
-        data["populized"] = True
-        data["date_last_upserted_at"] = datetime.now().strftime("%d-%m-%Y, %H:%M:%S")
-
         data = self.dh.restruture_data(data)
 
         self.mm.upsert_user(data)
+
+        if sleep:
+            if self.SLEEP_TIME != 0:
+                time.sleep(self.SLEEP_TIME)
 
     def getmediadata(self, userid, number=8):
         medias = self.cl.user_medias(userid, number)
@@ -102,6 +105,8 @@ class InstaData:
                 
                 if self.SLEEP_TIME != 0:
                     time.sleep(self.SLEEP_TIME / 5)
+            except TypeError:
+                pass
             except Exception as e:
                 print(f"Error in mediadata: " + str(e))
 
