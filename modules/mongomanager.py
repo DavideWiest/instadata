@@ -14,7 +14,7 @@ HOST = "davidewiest.com"
 PORT = "27017"
 DB_NAME = "instadata"
 
-BACKUP_HOST = "localhost"
+BACKUP_HOST = None # "localhost"
 BACKUP_PORT = "27017"
 BACKUP_DB_NAME = "instadata_backup"
 
@@ -27,8 +27,11 @@ class MongoManager:
         uri = f"mongodb://{user}:{password}@{host}:{port}"
         self.client = pymongo.MongoClient(uri)
         self.db = self.client[db_name]
-
-        if backup_host == "localhost":
+        
+        if backup_host == None:
+            self.backup_client = None
+            self.backup_db = None
+        elif backup_host == "localhost":
             backup_uri = f"mongodb://{backup_host}:{backup_port}"
             self.backup_client = pymongo.MongoClient(backup_uri)
             self.backup_db = self.backup_client[backup_db_name]
@@ -44,14 +47,15 @@ class MongoManager:
         
     def upsert_user(self, data):
         self.pcol.update_one(filter={"insta_id": data["insta_id"]}, update={"$set": data}, upsert=True)
-        self.bcol.update_one(filter={"insta_id": data["insta_id"]}, update={"$set": data}, upsert=True)
+        if backup_host != None:
+            self.bcol.update_one(filter={"insta_id": data["insta_id"]}, update={"$set": data}, upsert=True)
 
     def insert_empthy_user(self, id):
         if list(self.pcol.find({"insta_id": id})) == []:
             self.pcol.insert_one({"insta_id": id})
-        
-        if list(self.bcol.find({"insta_id": id})) == []:
-            self.bcol.insert_one({"insta_id": id})
+        if backup_host != None:
+            if list(self.bcol.find({"insta_id": id})) == []:
+                self.bcol.insert_one({"insta_id": id})
 
     def get_all_unpopulized(self):
         unpop_docs = list(self.pcol.find({"populized": False}, {"_id": False, "insta_id": True, "applicable": True}))
