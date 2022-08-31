@@ -8,7 +8,7 @@ import time
 
 USERNAME = "seauser565"
 PASSWORD = "seauser656"
-STARTUSER = "crcr_studio" # "cinephonics_alzey"
+STARTUSER = "maxime.batouche" # "cinephonics_alzey"
 
 USERMAX = 10000
 LAYERMAX = 10
@@ -27,4 +27,3 @@ id.make_list(use_file_too=True)
 end = time.time()
 print(f"Getting {USERMAX} accounts data took {end - start} seconds")
 print(f"Average time per account: {(end - start) / USERMAX:.2f} seconds")
-

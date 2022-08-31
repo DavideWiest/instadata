@@ -1,5 +1,5 @@
 from instagrapi import Client
-from instagrapi.exceptions import RateLimitError
+from instagrapi.exceptions import RateLimitError, PleaseWaitFewMinutes
 import time
 from modules.clientgetter import get_client
 from geopy.geocoders import Nominatim
@@ -31,7 +31,7 @@ class InstaData:
             self.cl = Client()
             self.cl.login(self.USERNAME, self.PASSWORD)
             self.cl.user_id_from_username(self.STARTUSER)
-        except RateLimitError:
+        except (RateLimitError, PleaseWaitFewMinutes):
             print("ERROR in self.cl.login")
             print("RATELIMITERROR: Wait a few hours before trying again")
             sys.exit(0)
@@ -132,21 +132,20 @@ class InstaData:
         return locations, hashtags, textdata
 
     def expandreach(self, userid, layer):
-        print(self.cl.user_info(userid).dict()["is_private"])
         subfollowers = self.cl.user_followers(userid, amount=100)
-        print("subfollowers")
-        print(list(subfollowers))
         subfollowersdict = {}
         for id in subfollowers:
             subfollowersdict[id] = layer+1
 
         return subfollowersdict
 
-    def make_list(self, print_info=True, use_file_too=False):
+    def make_list(self, print_info=True, use_file_too=False, startuser_amount=200):
         startuser_id = self.cl.user_id_from_username(self.STARTUSER)
-        followers = self.cl.user_followers(startuser_id)
+        followers = self.cl.user_followers(startuser_id, amount=startuser_amount)
         totaluserlist = {}
         layer = 1
+
+        print("Starting scraping")
 
         for follower in list(followers)[:15]:
             totaluserlist[follower] = 1
@@ -160,9 +159,7 @@ class InstaData:
             lastlayerlist = [k for k, v in totaluserlist.items() if v == layer]
 
             for followerid in lastlayerlist:
-                print(2.6)
                 new_user_ids = self.expandreach(followerid, layer)
-                print(new_user_ids)
                 totaluserlist = {**new_user_ids, **totaluserlist}
 
                 if new_user_ids != {}:
@@ -178,12 +175,12 @@ class InstaData:
                         with open("ids.txt", "a", encoding="utf-8") as f:
                             f.write("\n" + "\n".join([f"{k},{v}" for k, v in new_user_ids.items()]))
 
-                if not (len(totaluserlist) < self.USERMAX or layer < self.LAYERMAX):
-                    breakwhile = True
-                    break
-
                 if print_info:
                     print(f"{followerid} ({len(totaluserlist)}) of layer {layer} yielded {len(new_user_ids)} new users")
+
+                if len(totaluserlist) >= self.USERMAX or layer >= self.LAYERMAX:
+                    breakwhile = True
+                    break
 
                 if self.SLEEP_TIME != 0:
                     time.sleep(self.SLEEP_TIME)
