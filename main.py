@@ -23,7 +23,7 @@ dh = DataHandler(mm, ta, ls)
 id = InstaData(USERNAME, PASSWORD, STARTUSER, LAYERMAX, USERMAX, SLEEP_TIME, LONG_SLEEP_TIME, mm, ta, ls, dh)
 
 start = time.time()
-result = result = id.make_list(use_file_too=True)
+id.make_list(use_file_too=True)
 end = time.time()
 print(f"Getting {USERMAX} accounts data took {end - start} seconds")
 print(f"Average time per account: {(end - start) / USERMAX:.2f} seconds")
