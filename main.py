@@ -12,7 +12,7 @@ STARTUSER = "crcr_studio" # "cinephonics_alzey"
 
 USERMAX = 10000
 LAYERMAX = 10
-SLEEP_TIME = 8
+SLEEP_TIME = 9
 LONG_SLEEP_TIME = (60 * 60 * 0.5, 60 * 60 * 1.75)
 
 mm = MongoManager()
