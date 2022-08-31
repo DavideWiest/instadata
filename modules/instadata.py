@@ -178,7 +178,7 @@ class InstaData:
                         with open("ids.txt", "a", encoding="utf-8") as f:
                             f.write("\n" + "\n".join([f"{k},{v}" for k, v in new_user_ids.items()]))
 
-                if not (len(totaluserlist) < self.USERMAX and layer < self.LAYERMAX):
+                if not (len(totaluserlist) < self.USERMAX or layer < self.LAYERMAX):
                     breakwhile = True
                     break
 
