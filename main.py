@@ -10,8 +10,8 @@ USERNAME = "seauser565"
 PASSWORD = "seauser656"
 STARTUSER = "crcr_studio" # "cinephonics_alzey"
 
-USERMAX = 50
-LAYERMAX = 3
+USERMAX = 10000
+LAYERMAX = 10
 SLEEP_TIME = 8
 LONG_SLEEP_TIME = (60 * 60 * 0.5, 60 * 60 * 1.75)
 
@@ -23,10 +23,7 @@ dh = DataHandler(mm, ta, ls)
 id = InstaData(USERNAME, PASSWORD, STARTUSER, LAYERMAX, USERMAX, SLEEP_TIME, LONG_SLEEP_TIME, mm, ta, ls, dh)
 
 start = time.time()
-id.adduser(1207220012)
-id.adduser(27551593449)
-id.adduser(3121589379)
-
+result = result = id.make_list(use_file_too=True)
 end = time.time()
 print(f"Getting {USERMAX} accounts data took {end - start} seconds")
 print(f"Average time per account: {(end - start) / USERMAX:.2f} seconds")
