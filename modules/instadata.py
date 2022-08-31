@@ -84,12 +84,16 @@ class InstaData:
         self.mm.upsert_user(data)
 
         if self.SLEEP_TIME != 0:
-                    time.sleep(self.SLEEP_TIME)
+            time.sleep(self.SLEEP_TIME)
                 
         if self.LONG_SLEEP_TIME != ():
             if random.randrange(1750) == 69:
-                time.sleep(random.randrange(self.LONG_SLEEP_TIME[0], self.LONG_SLEEP_TIME[1]))
-        
+                sleep_time = random.randrange(self.LONG_SLEEP_TIME[0], self.LONG_SLEEP_TIME[1])
+                print("---------------------")
+                print(f"GOING INTO LONG SLEEP MODE FOR {sleep_time}s ({sleep_time/60:.2f}m / {sleep_time/3600:.2f}h)")
+                print("---------------------")
+                time.sleep(sleep_time)
+
 
     def get_mediadata(self, userid, number=8):
         medias = self.cl.user_medias(userid, number)
@@ -187,7 +191,12 @@ class InstaData:
                 
                 if self.LONG_SLEEP_TIME != ():
                     if random.randrange(1750) == 69:
-                        time.sleep(random.randrange(self.LONG_SLEEP_TIME[0], self.LONG_SLEEP_TIME[1]))
+                        sleep_time = random.randrange(self.LONG_SLEEP_TIME[0], self.LONG_SLEEP_TIME[1])
+                        print("---------------------")
+                        print(f"GOING INTO LONG SLEEP MODE FOR {sleep_time}s ({sleep_time/60:.2f}m / {sleep_time/3600:.2f}h)")
+                        print("---------------------")
+                        time.sleep(sleep_time)
+            
                 
             if breakwhile:
                 break
@@ -220,7 +229,11 @@ class InstaData:
                 
             if self.LONG_SLEEP_TIME != ():
                 if random.randrange(1750) == 69:
-                    time.sleep(random.randrange(self.LONG_SLEEP_TIME[0], self.LONG_SLEEP_TIME[1]))
+                    sleep_time = random.randrange(self.LONG_SLEEP_TIME[0], self.LONG_SLEEP_TIME[1])
+                    print("---------------------")
+                    print(f"GOING INTO LONG SLEEP MODE FOR {sleep_time}s ({sleep_time/60:.2f}m / {sleep_time/3600:.2f}h)")
+                    print("---------------------")
+                    time.sleep(sleep_time)
             
 
 

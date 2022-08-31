@@ -13,7 +13,7 @@ STARTUSER = "maxime.batouche" # "cinephonics_alzey"
 USERMAX = 10000
 LAYERMAX = 10
 SLEEP_TIME = 10
-LONG_SLEEP_TIME = (60 * 60 * 0.5, 60 * 60 * 1.75)
+LONG_SLEEP_TIME = (3600 * 0.5, 3600 * 1.75)
 
 mm = MongoManager()
 ta = TextAnalyser()
@@ -25,5 +25,6 @@ id = InstaData(USERNAME, PASSWORD, STARTUSER, LAYERMAX, USERMAX, SLEEP_TIME, LON
 start = time.time()
 id.make_list(use_file_too=True)
 end = time.time()
+
 print(f"Getting {USERMAX} accounts data took {end - start} seconds")
 print(f"Average time per account: {(end - start) / USERMAX:.2f} seconds")
