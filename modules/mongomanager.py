@@ -43,7 +43,10 @@ class MongoManager:
             self.backup_db = self.backup_client[backup_db_name]
 
         self.pcol = self.db[primary_collection]
-        self.bcol = self.backup_db[backup_primary_collection]
+        if backup_host != None:
+            self.bcol = self.backup_db[backup_primary_collection]
+        else:
+            self.bcol = None
         
     def upsert_user(self, data):
         self.pcol.update_one(filter={"insta_id": data["insta_id"]}, update={"$set": data}, upsert=True)
