@@ -158,13 +158,13 @@ class DataHandler():
             if not wa._has_subroute(data["external_url"]):
                 data["domains"][data["external_url"]] = 0
             else:
-                data["inks"][data["external_url"]] = 0
+                data["links"][data["external_url"]] = 0
         
         if data.get("website") not in ("", None):
             if not wa._has_subroute(data["website"]):
                 data["domains"][data["website"]] = 0
             else:
-                data["inks"][data["website"]] = 0
+                data["links"][data["website"]] = 0
 
         if "biography" in data:
             for domain in self.ta.finddomains(data["biography"]):
