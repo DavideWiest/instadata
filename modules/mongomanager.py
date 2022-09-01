@@ -27,6 +27,8 @@ class MongoManager:
         uri = f"mongodb://{user}:{password}@{host}:{port}"
         self.client = pymongo.MongoClient(uri)
         self.db = self.client[db_name]
+
+        self.backup_host = backup_host
         
         if backup_host == None:
             self.backup_client = None
@@ -50,13 +52,13 @@ class MongoManager:
         
     def upsert_user(self, data):
         self.pcol.update_one(filter={"insta_id": data["insta_id"]}, update={"$set": data}, upsert=True)
-        if backup_host != None:
+        if self.backup_host != None:
             self.bcol.update_one(filter={"insta_id": data["insta_id"]}, update={"$set": data}, upsert=True)
 
     def insert_empthy_user(self, id):
         if list(self.pcol.find({"insta_id": id})) == []:
             self.pcol.insert_one({"insta_id": id})
-        if backup_host != None:
+        if self.backup_host != None:
             if list(self.bcol.find({"insta_id": id})) == []:
                 self.bcol.insert_one({"insta_id": id})
 

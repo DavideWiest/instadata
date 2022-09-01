@@ -15,16 +15,17 @@ LAYERMAX = 10
 SLEEP_TIME = 10
 LONG_SLEEP_TIME = (3600 * 0.5, 3600 * 1.75)
 
-mm = MongoManager()
-ta = TextAnalyser()
-ls = LinktreeScraper(ta)
-dh = DataHandler(mm, ta, ls)
+if __name__ == "__main__":
+    mm = MongoManager()
+    ta = TextAnalyser()
+    ls = LinktreeScraper(ta)
+    dh = DataHandler(mm, ta, ls)
 
-id = InstaData(USERNAME, PASSWORD, STARTUSER, LAYERMAX, USERMAX, SLEEP_TIME, LONG_SLEEP_TIME, mm, ta, ls, dh)
+    id = InstaData(USERNAME, PASSWORD, STARTUSER, LAYERMAX, USERMAX, SLEEP_TIME, LONG_SLEEP_TIME, mm, ta, ls, dh)
 
-start = time.time()
-id.make_list(use_file_too=True)
-end = time.time()
+    start = time.time()
+    id.make_list(use_file_too=True)
+    end = time.time()
 
-print(f"Getting {USERMAX} accounts data took {end - start} seconds")
-print(f"Average time per account: {(end - start) / USERMAX:.2f} seconds")
+    print(f"Getting {USERMAX} accounts data took {end - start} seconds")
+    print(f"Average time per account: {(end - start) / USERMAX:.2f} seconds")
