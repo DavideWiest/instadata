@@ -6,6 +6,7 @@ from modules.mailhandler import EmailValidator
 wa = WebsiteAnalyser()
 ev = EmailValidator()
 
+
 class DataHandler():
     def __init__(self, mm, ta, ls):
         self.mm = mm
@@ -29,6 +30,9 @@ class DataHandler():
 
         with open("resources/datamigration.json", "r", encoding="utf-8") as f:
             self.datamigrationdicts = json.load(f)
+
+    def is_valuable_domain(self, url):
+        return not any([domain in url for domain in self.most_used_websites])
 
     def link_is_social(self, link):
         for social_link in self.social_network_list:
@@ -139,9 +143,6 @@ class DataHandler():
 
         return data
 
-    def is_valuable_domain(self, url):
-        return not any([domain in url for domain in self.most_used_websites])
-
     def extract_datapoints(self, data):
         data["gender"] = self.ta.get_gender(data["full_name"])
         data["emails"] = []
@@ -233,15 +234,19 @@ class DataHandler():
 
 
         if "linktree" in data["social_profiles"]:
-            linktreedata = self.ls.get_linktree(data["social_profiles"]["linktree"]["link"])
-            for link in linktreedata["links"]:
-                data["links"].append(link)
-            linktreedata["profile_picture"] = linktreedata["avatar_image"]
-            a = linktreedata.pop("updated_at", None)
-            a = linktreedata.pop("is_active", None)
-            a = linktreedata.pop("links", None)
-            a = linktreedata.pop("avatar_image", None)
-            data["social_profiles"]["linktree"] = linktreedata
+            try:
+                linktreedata = self.ls.get_linktree(data["social_profiles"]["linktree"]["link"])
+                for link in linktreedata["links"]:
+                    data["links"][link] = 1 if self.is_valuable_domain(link) else 0
+
+                linktreedata["profile_picture"] = linktreedata["avatar_image"]
+                a = linktreedata.pop("updated_at", None)
+                a = linktreedata.pop("is_active", None)
+                a = linktreedata.pop("links", None)
+                a = linktreedata.pop("avatar_image", None)
+                data["social_profiles"]["linktree"] = linktreedata
+            except:
+                print("ERROR IN get_linktree - likely contenttypeerror because of missing person-identification")
 
         return data
 
@@ -262,3 +267,12 @@ class DataHandler():
         return data
 
 
+class isValDomainWrapper:
+    def __init__(self):
+        with open("resources/most_used_websites.txt", "r") as f:
+            f = f.read().split("\n")
+
+        self.most_used_websites = f
+
+    def is_valuable_domain(self, url):
+        return not any([domain in url for domain in self.most_used_websites])

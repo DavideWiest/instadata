@@ -156,8 +156,9 @@ async def main(url):
     return userobj
 
 class LinktreeScraper:
-    def __init__(self, ta):
+    def __init__(self, ta, vd):
         self.ta = ta
+        self.vd = vd
         pass
 
     def get_linktree(self, url):
@@ -168,8 +169,9 @@ class LinktreeScraper:
     def get_linktreedata(self, data, link):
 
         data["linktreedata"] = self.get_linktree(link)
-        for lt_link in data["linktreedata"]["links"]:
-            data["links"].append(lt_link[1])
+        print(data["linktreedata"]["links"])
+        for link in data["linktreedata"]["links"]:
+            data["links"][link] = 1 if self.vd.is_valuable_domain(link) else 0
 
         data["linktreedata"]["description_original"] = data["linktreedata"]["description"]
         data["linktreedata"]["description_normalized"] = None

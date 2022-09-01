@@ -1,7 +1,7 @@
 from modules.textanalyser import TextAnalyser
 from modules.mongomanager import MongoManager
 from modules.linktreescraper import LinktreeScraper
-from modules.datahandler import DataHandler
+from modules.datahandler import DataHandler, isValDomainWrapper
 
 from modules.instadata import InstaData
 import time
@@ -18,7 +18,8 @@ LONG_SLEEP_TIME = (3600 * 0.5, 3600 * 1.75)
 if __name__ == "__main__":
     mm = MongoManager()
     ta = TextAnalyser()
-    ls = LinktreeScraper(ta)
+    vd = isValDomainWrapper()
+    ls = LinktreeScraper(ta, vd)
     dh = DataHandler(mm, ta, ls)
 
     id = InstaData(USERNAME, PASSWORD, STARTUSER, LAYERMAX, USERMAX, SLEEP_TIME, LONG_SLEEP_TIME, mm, ta, ls, dh)

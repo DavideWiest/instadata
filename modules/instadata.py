@@ -170,6 +170,9 @@ class InstaData:
                     for userid in new_user_ids:
                         try:
                             self.adduser(userid)
+                        except KeyboardInterrupt:
+                            print("PROGRAM ENDED THROUGH C^ INPUT")
+                            sys.exit(0)
                         except:
                             print("ERROR IN adduser")
                             print(traceback.format_exc())
