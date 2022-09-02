@@ -194,7 +194,7 @@ class InstaData:
                                 f.write("\n" + func_status + "," + str(userid) + "," + str(new_user_ids[userid]))
 
                 if print_info:
-                    print(f"{followerid} ({len(totaluserlist)}) of layer {layer} yielded {len(new_user_ids)} new users")
+                    print(f"{followerid} of layer {layer} yielded {len(new_user_ids)} new users")
 
                 if len(totaluserlist) >= self.USERMAX or layer >= self.LAYERMAX:
                     breakwhile = True
