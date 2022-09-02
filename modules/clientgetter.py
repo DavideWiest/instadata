@@ -44,7 +44,7 @@ def get_client(settings_file_path, username, password):
         settings_file = settings_file_path
         if not os.path.isfile(settings_file):
             # settings file does not exist
-            print('Unable to find file: {0!s}'.format(settings_file))
+            print('ERROR IN get_client: Unable to find file: {0!s}'.format(settings_file))
 
             # login new
             api = Client(
@@ -53,7 +53,7 @@ def get_client(settings_file_path, username, password):
         else:
             with open(settings_file) as file_data:
                 cached_settings = json.load(file_data, object_hook=from_json)
-            print('Reusing settings: {0!s}'.format(settings_file))
+            print('REUSING CACHED SETTINGS: {0!s}'.format(settings_file))
 
             device_id = cached_settings.get('device_id')
             # reuse auth settings

@@ -158,9 +158,6 @@ class InstaData:
         for follower in list(followers):
             totaluserlist[follower] = 1
 
-        if use_file_too:
-            with open("ids.csv", "a", encoding="utf-8") as f:
-                f.write("\n" + "\n".join([f"{k},{v}" for k, v in totaluserlist.items()]))
 
         breakwhile = False
         while len(totaluserlist) < self.USERMAX and layer < self.LAYERMAX:
@@ -194,7 +191,7 @@ class InstaData:
 
                         if use_file_too:
                             with open("ids.csv", "a", encoding="utf-8") as f:
-                                f.write("\n" + func_status + "," + userid + "," + new_user_ids[userid])
+                                f.write("\n" + func_status + "," + str(userid) + "," + str(new_user_ids[userid]))
 
                 if print_info:
                     print(f"{followerid} ({len(totaluserlist)}) of layer {layer} yielded {len(new_user_ids)} new users")
@@ -217,6 +214,8 @@ class InstaData:
                 
             if breakwhile:
                 break
+
+            print(f"ADDING SCRAPING LAYER - NEXT LAYER: {layer+1}")
 
             layer += 1
 
