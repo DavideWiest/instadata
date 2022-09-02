@@ -51,12 +51,13 @@ class DataHandler():
     def classify_user(self, data):
         userlevel = 0
         userlevel -= 1 if data["is_private"] == False else 0
-        userlevel += 1 if len(data["social_profiles"]) >= 2 else 0
-        userlevel += 3 * len(data["emails"])
+        userlevel += 1 if len(data["social_profiles"]) > 1 else 0
+        userlevel += 4 * len(data["emails"])
         userlevel += 1 * len(data["phone_numbers"])
         userlevel += 2 * len([v for k, v in data["domains"].items() if v == 1])
+        userlevel += 1 * len([v for k, v in data["domains"].items() if v == 0])
         userlevel += 1 * len([v for k, v in data["links"].items() if v == 1])
-        userlevel += 2 if data["follower_count"] >= 10000 else 0
+        userlevel += 2 if data["follower_count"] > 10000 else 0
         return userlevel
 
     def delete_unneeded_fields(self, data):
@@ -69,10 +70,11 @@ class DataHandler():
         if "botscore" in data:
             return data["botscore"] < 3
         botscore = 0
-        botscore += 1 if (data.get("follower_count", 0) / data.get("following_count", 0) + 1) > 4 else 0
+        botscore += 1 if (data.get("follower_count", 0) / data.get("following_count", 0) + 1) > 7 else 0
         botscore += 1 if data.get("follower_count", 0) < 20 else 0
         botscore += 1 if data.get("biography", "") == "" else 0
         botscore += 1 if data.get("media_count", 0) < 10 else 0
+        botscore -= 1 if data["is_private"] == False else 0
         botscore += 1 if data.get("has_anonymous_profile_picture", True) else 0
         botscore += 1 if data.get("is_new_to_instagram", False) else 0
         return (botscore < 3, botscore)
@@ -141,6 +143,14 @@ class DataHandler():
         data["id"] = id
         data["date_last_upserted_at"] = datetime.now().strftime("%d-%m-%Y, %H:%M:%S")
 
+        for field in data:
+            if field in self.datamigrationdicts["clear_empthy_string_fields"] and field == "":
+                data[field] = None
+        
+        for field in data:
+            if field in self.datamigrationdicts["clear_zero_int_fields"] and field == 0:
+                data[field] = None
+
         return data
 
     def extract_datapoints(self, data):
@@ -172,6 +182,7 @@ class DataHandler():
                 data["domains"][domain] = 0
             for link in self.ta.findlinks(data["biography"]):
                 data["links"][link] = 0
+
         
         for domain in data["domains"]:
             data["domains"][domain] = 1 if self.is_valuable_domain(domain) else 0
@@ -182,17 +193,18 @@ class DataHandler():
             data["phone_numbers"].append(data["public_phone_number"])
         if data.get("contact_phone_number") not in ("", None):
             data["phone_numbers"].append(data["contact_phone_number"])
-        # data["phone_numbers"] = list(dict.fromkeys(data["phone_numbers"]))
 
-        for pn in data["phone_numbers"].copy()[::-1]:
-            if any([i.endswith(pn) for i in data["phone_numbers"]]):
+        for pn in data["phone_numbers"]:
+            pnlist2 = data["phone_numbers"].copy()
+            pnlist2.remove(pn)
+            if not pn.startswith("+") and any([a.endswith(pn) for a in pnlist2]):
                 data["phone_numbers"].remove(pn)
 
         account_type_dict = {
-            1: "normal/consumer",
+            1: "consumer/creative/self-employed",
             2: "business",
-            3: "creative/self-employed",
-            None: ""
+            3: "normal/consumer",
+            None: "unknown"
         }
         data["account_type"] = account_type_dict[data["account_type"]]
 
@@ -244,6 +256,10 @@ class DataHandler():
                 a = linktreedata.pop("is_active", None)
                 a = linktreedata.pop("links", None)
                 a = linktreedata.pop("avatar_image", None)
+                linktreedata["created_at"] = linktreedata.get("created_at")
+                linktreedata["description"] = linktreedata.get("description")
+                linktreedata["profile_picture"] = linktreedata.get("profile_picture")
+                linktreedata["tier"] = linktreedata.get("tier")
                 data["social_profiles"]["linktree"] = linktreedata
             except:
                 print("ERROR IN get_linktree - likely contenttypeerror because of missing person-identification")

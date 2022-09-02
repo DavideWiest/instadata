@@ -9,6 +9,8 @@ import traceback
 import random
 import sys
 
+from instagram_private_api import (ClientError, ClientLoginError, ClientCookieExpiredError, ClientLoginRequiredError)
+from instagrapi.exceptions import (BadPassword, ReloginAttemptExceeded, ChallengeRequired, SelectContactPointRecoveryForm, RecaptchaChallengeForm, FeedbackRequired, PleaseWaitFewMinutes, LoginRequired)
 
 class InstaData:
     def __init__(self, username, password, startuser, layermax, usermax, sleep_time, long_sleep_time, mm, ta, ls, dh):
@@ -38,6 +40,8 @@ class InstaData:
 
         self.cl2 = get_client("resources/cache.json", self.USERNAME, self.PASSWORD)
 
+        print("LOGIN COMPLETED")
+
     def get_address(self, lat, long):
         coordinates = lat, long
         location = self.locator.reverse(coordinates)
@@ -49,7 +53,7 @@ class InstaData:
         data = self.cl2.user_info(id)["user"]
         is_no_bot, botscore = self.dh.check_is_no_bot(data)
         if not is_no_bot:
-            botdata = self.dh.get_botdata(data, botscore)
+            botdata = self.dh.get_botdata(data)
             self.mm.upsert_user(botdata)
             return
         elif data.get("is_memorialized", False):
@@ -57,7 +61,7 @@ class InstaData:
             self.mm.upsert_user(botdata)
             return
         
-        data["applicable"] = [True, "USER" if data.get("is_busines", False) == True else "BUSINESS"]
+        data["applicable"] = [True, "USER" if data.get("is_busines", False) == False else "BUSINESS"]
         data["populized"] = True
         data["date_last_upserted_at"] = datetime.now().strftime("%d-%m-%Y, %H:%M:%S")
 
@@ -70,7 +74,7 @@ class InstaData:
         textdata = ""
         data["media_latest_locations"] = {}
         data["media_hashtags"] = {}
-        data["media_latest_locations_license"] = "None"
+        data["media_latest_locations_license"] = None
 
         if data["classification_level"] >= 3:
             data["media_latest_locations"], data["media_hashtags"], textdata = self.get_mediadata(id)
@@ -149,13 +153,13 @@ class InstaData:
         totaluserlist = {}
         layer = 1
 
-        print("Starting scraping")
+        print("SCRAPER STARTING")
 
-        for follower in list(followers)[:15]:
+        for follower in list(followers):
             totaluserlist[follower] = 1
 
         if use_file_too:
-            with open("ids.txt", "a", encoding="utf-8") as f:
+            with open("ids.csv", "a", encoding="utf-8") as f:
                 f.write("\n" + "\n".join([f"{k},{v}" for k, v in totaluserlist.items()]))
 
         breakwhile = False
@@ -168,19 +172,29 @@ class InstaData:
 
                 if new_user_ids != {}:
                     for userid in new_user_ids:
+                        func_status = "UNKNOWN"
                         try:
                             self.adduser(userid)
+                            func_status = "SUCCESS"
                         except KeyboardInterrupt:
                             print("PROGRAM ENDED THROUGH C^ INPUT")
                             sys.exit(0)
+                        except (PleaseWaitFewMinutes, RateLimitError):
+                            print("ERROR IN adduser")
+                            print(traceback.format_exc())
+                            func_status = "RTLMTERR"
+                        except (BadPassword, ReloginAttemptExceeded, ChallengeRequired, SelectContactPointRecoveryForm, RecaptchaChallengeForm, FeedbackRequired, LoginRequired, ClientError, ClientLoginError, ClientCookieExpiredError, ClientLoginRequiredError):
+                            print("ERROR IN adduser")
+                            print(traceback.format_exc())
+                            func_status = "INT_ERR"
                         except:
                             print("ERROR IN adduser")
                             print(traceback.format_exc())
+                            func_status = "EXT_ERR"
 
-                if use_file_too:
-                    if new_user_ids != {}:
-                        with open("ids.txt", "a", encoding="utf-8") as f:
-                            f.write("\n" + "\n".join([f"{k},{v}" for k, v in new_user_ids.items()]))
+                        if use_file_too:
+                            with open("ids.csv", "a", encoding="utf-8") as f:
+                                f.write("\n" + func_status + "," + userid + "," + new_user_ids[userid])
 
                 if print_info:
                     print(f"{followerid} ({len(totaluserlist)}) of layer {layer} yielded {len(new_user_ids)} new users")
@@ -215,7 +229,7 @@ class InstaData:
                 time.sleep(self.SLEEP_TIME)
             self.adduser(id)
 
-    def populize_all_from_file(self, filename="ids.txt", print_info=True):
+    def populize_all_from_file(self, filename="ids.csv", print_info=True):
         with open(filename, "a", encoding="utf-8") as f:
             unpop_ids = f.read().split("\n")
 

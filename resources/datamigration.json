@@ -14,7 +14,7 @@
         "interop_messaging_user_fbid": "interop_messaging_user_fbid"
     },
     "insta_datastatsmigrationdict": {
-        "follower_count": "followers",
+        "follower_count": "follower_count",
         "following_count": "following_count",
         "media_count": "media_count",
         "following_tag_count": "following_tag_count",
@@ -65,5 +65,15 @@
         ["populized", "populized"],
         ["date_last_upserted_at", "date_last_upserted_at"],
         ["applicable", "applicable"]
+    ],
+    "clear_empthy_string_fields": [
+        "address_street",
+        "city_name",
+        "public_phone_country_code",
+        "zip"
+    ],
+    "clear_zero_int_fields": [
+        "latitude",
+        "longitude"
     ]
 }
