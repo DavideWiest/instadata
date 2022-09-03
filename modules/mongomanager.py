@@ -74,3 +74,14 @@ class MongoManager:
     def is_in_db(self, id):
         return self.pcol.find_one({"insta_id": id}, {"_id": False, "insta_id": True, "date_last_upserted_at": True, "populized": True})
     
+    def find(self, filter, returnables):
+        result = self.pcol.find_one(filter, returnables)
+        return result
+
+    def multifind(self, filter={}, returnables=None):
+        if returnables == None:
+            result = self.pcol.find(filter)
+        else:
+            result = self.pcol.find(filter, returnables)
+            
+        return result

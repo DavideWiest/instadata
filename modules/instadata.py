@@ -61,7 +61,7 @@ class InstaData:
             self.mm.upsert_user(botdata)
             return
         
-        data["applicable"] = [True, "USER" if data.get("is_busines", False) == False else "BUSINESS"]
+        data["applicable"] = [True] + ["USER" if data.get("is_business", False) == False else "BUSINESS"]
         data["populized"] = True
         data["date_last_upserted_at"] = datetime.now().strftime("%d-%m-%Y, %H:%M:%S")
 
@@ -84,7 +84,6 @@ class InstaData:
         data["language"] = langid.classify(textdata + " " + data["biography"])[0]
 
         data = self.dh.restruture_data(data)
-
         self.mm.upsert_user(data)
 
         if self.SLEEP_TIME != 0:
@@ -129,18 +128,22 @@ class InstaData:
                             hashtags[ht] = 1
                 
                 if self.SLEEP_TIME != 0:
-                    time.sleep(self.SLEEP_TIME / 2)
+                    time.sleep(self.SLEEP_TIME / 4)
             except TypeError:
                 print("TYPEERROR IN get_mediadata")
                 print(traceback.format_exc())
-            except Exception as e:
+            except Exception:
                 print(f"ERROR IN get_mediadata")
                 print(traceback.format_exc())
 
         return locations, hashtags, textdata
 
     def expandreach(self, userid, layer):
-        subfollowers = self.cl.user_followers(userid, amount=100)
+        try:
+            subfollowers = self.cl.user_followers(userid, amount=100)
+        except ConnectionError:
+            print("ERROR IN expandreach: Connectionerror: skipping user")
+            return {}
         subfollowersdict = {}
         for id in subfollowers:
             subfollowersdict[id] = layer+1
@@ -148,8 +151,12 @@ class InstaData:
         return subfollowersdict
 
     def make_list(self, print_info=True, use_file_too=False, startuser_amount=200):
-        startuser_id = self.cl.user_id_from_username(self.STARTUSER)
-        followers = self.cl.user_followers(startuser_id, amount=startuser_amount)
+        try:
+            startuser_id = self.cl.user_id_from_username(self.STARTUSER)
+            followers = self.cl.user_followers(startuser_id, amount=startuser_amount)
+        except ConnectionError:
+            print("ERROR IN make_list: Connectionerror: please restart the program")
+            sys.exit(0)
         totaluserlist = {}
         layer = 1
 
@@ -177,7 +184,7 @@ class InstaData:
                             print("PROGRAM ENDED THROUGH C^ INPUT")
                             sys.exit(0)
                         except (PleaseWaitFewMinutes, RateLimitError):
-                            print("ERROR IN adduser")
+                            print("ERROR IN adduser: Program was ratelimited - retry in some hours")
                             print(traceback.format_exc())
                             func_status = "RTLMTERR"
                         except (BadPassword, ReloginAttemptExceeded, LoginRequired, ClientError, ClientLoginError, ClientCookieExpiredError, ClientLoginRequiredError):
@@ -187,7 +194,7 @@ class InstaData:
                     
                         if use_file_too:
                             with open("ids.csv", "a", encoding="utf-8") as f:
-                                f.write("\n" + func_status + "," + str(userid) + "," + str(new_user_ids[userid]))
+                                f.write("\n" + func_status + "," + str(userid) + "," + str(new_user_ids[userid]) + "," + datetime.now().strftime("%d-%m-%Y, %H:%M:%S"))
 
                 if print_info:
                     print(f"{followerid} of layer {layer} yielded {len(new_user_ids)} new users")
