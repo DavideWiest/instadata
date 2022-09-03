@@ -96,7 +96,7 @@ class DataHandler():
         botdata = {
             "insta_id": data["pk"],
             "applicable": [False, "BOT"],
-            "date_last_upserted_at": data["date_last_upserted_at"],
+            "date_last_upserted_at": data.get("date_last_upserted_at", datetime.now().strftime("%d-%m-%Y, %H:%M:%S")),
             "populized": True,
             "classification_level": 0
         }
@@ -106,7 +106,7 @@ class DataHandler():
         memorializeddata = {
             "insta_id": data["pk"],
             "applicable": [False, "DEAD"],
-            "date_last_upserted_at": data["date_last_upserted_at"],
+            "date_last_upserted_at": data.get("date_last_upserted_at", datetime.now().strftime("%d-%m-%Y, %H:%M:%S")),
             "populized": True,
             "classification_level": 0
         }
