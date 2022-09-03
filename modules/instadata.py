@@ -180,15 +180,11 @@ class InstaData:
                             print("ERROR IN adduser")
                             print(traceback.format_exc())
                             func_status = "RTLMTERR"
-                        except (BadPassword, ReloginAttemptExceeded, ChallengeRequired, SelectContactPointRecoveryForm, RecaptchaChallengeForm, FeedbackRequired, LoginRequired, ClientError, ClientLoginError, ClientCookieExpiredError, ClientLoginRequiredError):
+                        except (BadPassword, ReloginAttemptExceeded, LoginRequired, ClientError, ClientLoginError, ClientCookieExpiredError, ClientLoginRequiredError):
                             print("ERROR IN adduser")
                             print(traceback.format_exc())
                             func_status = "INT_ERR"
-                        except:
-                            print("ERROR IN adduser")
-                            print(traceback.format_exc())
-                            func_status = "EXT_ERR"
-
+                    
                         if use_file_too:
                             with open("ids.csv", "a", encoding="utf-8") as f:
                                 f.write("\n" + func_status + "," + str(userid) + "," + str(new_user_ids[userid]))
