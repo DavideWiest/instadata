@@ -1,5 +1,5 @@
 from instagrapi import Client
-from instagrapi.exceptions import RateLimitError, PleaseWaitFewMinutes
+from instagrapi.exceptions import RateLimitError, PleaseWaitFewMinutes, ClientConnectionError
 import time
 from modules.clientgetter import get_client
 from geopy.geocoders import Nominatim
@@ -13,7 +13,7 @@ from instagram_private_api import (ClientError, ClientLoginError, ClientCookieEx
 from instagrapi.exceptions import (BadPassword, ReloginAttemptExceeded, ChallengeRequired, SelectContactPointRecoveryForm, RecaptchaChallengeForm, FeedbackRequired, PleaseWaitFewMinutes, LoginRequired)
 
 class InstaData:
-    def __init__(self, username, password, startuser, layermax, usermax, sleep_time, long_sleep_time, mm, ta, ls, dh):
+    def __init__(self, username, password, startuser, layermax, usermax, sleep_time, long_sleep_time, proxy, mm, ta, ls, dh):
         self.USERNAME = username
         self.PASSWORD = password
         self.STARTUSER = startuser
@@ -30,7 +30,10 @@ class InstaData:
         self.locator = Nominatim(user_agent="myGeocoder")
 
         try:
-            self.cl = Client()
+            if proxy != "":
+                self.cl = Client(proxy=proxy)
+            else:
+                self.cl = Client()
             self.cl.login(self.USERNAME, self.PASSWORD)
             self.cl.user_id_from_username(self.STARTUSER)
         except (RateLimitError, PleaseWaitFewMinutes):
@@ -38,7 +41,7 @@ class InstaData:
             print("RATELIMITERROR: Wait a few hours before trying again")
             sys.exit(0)
 
-        self.cl2 = get_client("resources/cache.json", self.USERNAME, self.PASSWORD)
+        self.cl2 = get_client("resources/cache.json", self.USERNAME, self.PASSWORD, proxy=proxy)
 
         print("LOGIN COMPLETED")
 
@@ -141,7 +144,7 @@ class InstaData:
     def expandreach(self, userid, layer):
         try:
             subfollowers = self.cl.user_followers(userid, amount=100)
-        except ConnectionError:
+        except ClientConnectionError:
             print("ERROR IN expandreach: Connectionerror: skipping user")
             return {}
         subfollowersdict = {}
@@ -154,7 +157,7 @@ class InstaData:
         try:
             startuser_id = self.cl.user_id_from_username(self.STARTUSER)
             followers = self.cl.user_followers(startuser_id, amount=startuser_amount)
-        except ConnectionError:
+        except ClientConnectionError:
             print("ERROR IN make_list: Connectionerror: please restart the program")
             sys.exit(0)
         totaluserlist = {}

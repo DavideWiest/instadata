@@ -15,6 +15,8 @@ LAYERMAX = 10
 SLEEP_TIME = 10
 LONG_SLEEP_TIME = (3600 * 0.5, 3600 * 1.75)
 
+PROXY = ""
+
 if __name__ == "__main__":
     mm = MongoManager()
     ta = TextAnalyser()
@@ -22,7 +24,7 @@ if __name__ == "__main__":
     ls = LinktreeScraper(ta, vd)
     dh = DataHandler(mm, ta, ls)
 
-    id = InstaData(USERNAME, PASSWORD, STARTUSER, LAYERMAX, USERMAX, SLEEP_TIME, LONG_SLEEP_TIME, mm, ta, ls, dh)
+    id = InstaData(USERNAME, PASSWORD, STARTUSER, LAYERMAX, USERMAX, SLEEP_TIME, LONG_SLEEP_TIME, PROXY, mm, ta, ls, dh)
 
     start = time.time()
     id.make_list(use_file_too=True)
