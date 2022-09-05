@@ -196,7 +196,7 @@ class InstaData:
                             func_status = "INT_ERR"
                     
                         if use_file_too:
-                            with open("ids.csv", "a", encoding="utf-8") as f:
+                            with open("log.csv", "a", encoding="utf-8") as f:
                                 f.write("\n" + func_status + "," + str(userid) + "," + str(new_user_ids[userid]) + "," + datetime.now().strftime("%d-%m-%Y, %H:%M:%S"))
 
                 if print_info:
@@ -234,7 +234,7 @@ class InstaData:
                 time.sleep(self.SLEEP_TIME)
             self.adduser(id)
 
-    def populize_all_from_file(self, filename="ids.csv", print_info=True):
+    def populize_all_from_file(self, filename="log.csv", print_info=True):
         with open(filename, "a", encoding="utf-8") as f:
             unpop_ids = f.read().split("\n")
 
