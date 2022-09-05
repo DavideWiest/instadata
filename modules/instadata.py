@@ -194,6 +194,13 @@ class InstaData:
                             print("ERROR IN adduser")
                             print(traceback.format_exc())
                             func_status = "INT_ERR"
+                        except ChallengeRequired:
+                            raise 
+                        except Exception:
+                            print("ERROR IN adduser")
+                            print(traceback.format_exc())
+                            func_status = "INT_ERR"
+                        
                     
                         if use_file_too:
                             with open("log.csv", "a", encoding="utf-8") as f:
