@@ -195,6 +195,8 @@ class InstaData:
                             print(traceback.format_exc())
                             func_status = "INT_ERR"
                         except ChallengeRequired:
+                            print("ERROR IN adduser: Challenge required.")
+                            print(traceback.format_exc())
                             raise 
                         except Exception:
                             print("ERROR IN adduser")
