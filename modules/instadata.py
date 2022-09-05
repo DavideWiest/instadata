@@ -152,6 +152,9 @@ class InstaData:
             subfollowersdict[id] = layer+1
 
         return subfollowersdict
+    
+    def check_loop_condition(self, len_totaluserlist, layer):
+        return len_totaluserlist < self.USERMAX and layer < self.LAYERMAX
 
     def make_list(self, print_info=True, use_file_too=False, startuser_amount=200):
         try:
@@ -170,7 +173,7 @@ class InstaData:
 
 
         breakwhile = False
-        while len(totaluserlist) < self.USERMAX and layer < self.LAYERMAX:
+        while self.check_loop_condition(len(totaluserlist), layer):
             lastlayerlist = [k for k, v in totaluserlist.items() if v == layer]
 
             for followerid in lastlayerlist:

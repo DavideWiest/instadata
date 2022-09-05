@@ -10,9 +10,9 @@ USERNAME = "seauser565"
 PASSWORD = "seauser656"
 STARTUSER = "maxime.batouche" # "cinephonics_alzey"
 
-USERMAX = 10000
-LAYERMAX = 10
-SLEEP_TIME = 10
+USERMAX = float("inf") #10000
+LAYERMAX = float("inf") #10
+SLEEP_TIME = 8
 LONG_SLEEP_TIME = (3600 * 0.5, 3600 * 1.75)
 
 PROXY = ""
