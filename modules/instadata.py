@@ -55,7 +55,7 @@ class InstaData:
             return
         data = self.cl2.user_info(id)["user"]
         is_no_bot, botscore = self.dh.check_is_no_bot(data)
-        if not is_no_bot:
+        if is_no_bot == False:
             botdata = self.dh.get_botdata(data)
             self.mm.upsert_user(botdata)
             return

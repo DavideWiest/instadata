@@ -66,9 +66,9 @@ class DataHandler():
 
     def check_is_no_bot(self, data):
         if data.get("is_verified", False) == True:
-            return True
+            return (True, 0)
         if "botscore" in data:
-            return data["botscore"] < 3
+            return (data["botscore"] < 3, data["botscore"])
         botscore = 0
         botscore += 1 if (data.get("follower_count", 0) / data.get("following_count", 0) + 1) > 7 else 0
         botscore += 1 if data.get("follower_count", 0) < 20 else 0
