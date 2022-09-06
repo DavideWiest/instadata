@@ -12,7 +12,7 @@ STARTUSER = "motivationandhustle1" # "maxime.batouche" # "cinephonics_alzey"
 
 USERMAX = float("inf") #10000
 LAYERMAX = float("inf") #10
-SLEEP_TIME = 8
+SLEEP_TIME = 10
 LONG_SLEEP_TIME = (3600 * 0.5, 3600 * 1.75)
 
 PROXY = ""
