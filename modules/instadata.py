@@ -96,7 +96,7 @@ class InstaData:
             if random.randrange(1750) == 69:
                 sleep_time = random.randrange(self.LONG_SLEEP_TIME[0], self.LONG_SLEEP_TIME[1])
                 print("---------------------")
-                print(f"GOING INTO LONG SLEEP MODE FOR {sleep_time}s ({sleep_time/60:.2f}m / {sleep_time/3600:.2f}h)")
+                print(f"GOING INTO LONG SLEEP MODE FOR {sleep_time}s ({sleep_time/60:.2f}m / {sleep_time/3600:.2f}h)" + datetime.now().strftime("%d-%m-%Y, %H:%M:%S"))
                 print("---------------------")
                 with open("log.csv", "a", encoding="utf-8") as f:
                     f.write("\n" + "LONG_SLEEP_MODE" + "," + "," +  "," + datetime.now().strftime("%d-%m-%Y, %H:%M:%S"))
@@ -228,7 +228,7 @@ class InstaData:
                     if random.randrange(1750) == 69:
                         sleep_time = random.randrange(self.LONG_SLEEP_TIME[0], self.LONG_SLEEP_TIME[1])
                         print("---------------------")
-                        print(f"GOING INTO LONG SLEEP MODE FOR {sleep_time}s ({sleep_time/60:.2f}m / {sleep_time/3600:.2f}h)")
+                        print(f"GOING INTO LONG SLEEP MODE FOR {sleep_time}s ({sleep_time/60:.2f}m / {sleep_time/3600:.2f}h)" + datetime.now().strftime("%d-%m-%Y, %H:%M:%S"))
                         print("---------------------")
                         with open("log.csv", "a", encoding="utf-8") as f:
                             f.write("\n" + "LONG_SLEEP_MODE" + "," + "," +  "," + datetime.now().strftime("%d-%m-%Y, %H:%M:%S"))
@@ -274,7 +274,7 @@ class InstaData:
                 if random.randrange(1750) == 69:
                     sleep_time = random.randrange(self.LONG_SLEEP_TIME[0], self.LONG_SLEEP_TIME[1])
                     print("---------------------")
-                    print(f"GOING INTO LONG SLEEP MODE FOR {sleep_time}s ({sleep_time/60:.2f}m / {sleep_time/3600:.2f}h)")
+                    print(f"GOING INTO LONG SLEEP MODE FOR {sleep_time}s ({sleep_time/60:.2f}m / {sleep_time/3600:.2f}h)" + datetime.now().strftime("%d-%m-%Y, %H:%M:%S"))
                     print("---------------------")
                     with open("log.csv", "a", encoding="utf-8") as f:
                         f.write("\n" + "LONG_SLEEP_MODE" + "," + "," +  "," + datetime.now().strftime("%d-%m-%Y, %H:%M:%S"))
