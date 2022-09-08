@@ -98,6 +98,9 @@ class InstaData:
                 print("---------------------")
                 print(f"GOING INTO LONG SLEEP MODE FOR {sleep_time}s ({sleep_time/60:.2f}m / {sleep_time/3600:.2f}h)")
                 print("---------------------")
+                with open("log.csv", "a", encoding="utf-8") as f:
+                    f.write("\n" + "LONG_SLEEP_MODE" + "," + "," +  "," + datetime.now().strftime("%d-%m-%Y, %H:%M:%S"))
+                        
                 time.sleep(sleep_time)
 
 
@@ -227,6 +230,9 @@ class InstaData:
                         print("---------------------")
                         print(f"GOING INTO LONG SLEEP MODE FOR {sleep_time}s ({sleep_time/60:.2f}m / {sleep_time/3600:.2f}h)")
                         print("---------------------")
+                        with open("log.csv", "a", encoding="utf-8") as f:
+                            f.write("\n" + "LONG_SLEEP_MODE" + "," + "," +  "," + datetime.now().strftime("%d-%m-%Y, %H:%M:%S"))
+                        
                         time.sleep(sleep_time)
             
                 
@@ -234,6 +240,9 @@ class InstaData:
                 break
 
             print(f"ADDING SCRAPING LAYER - NEXT LAYER: {layer+1}")
+            with open("log.csv", "a", encoding="utf-8") as f:
+                f.write("\n" + "ADDING_LAYER:next=" + str(layer+1) + "," + "," +  "," + datetime.now().strftime("%d-%m-%Y, %H:%M:%S"))
+                        
 
             layer += 1
 
@@ -267,6 +276,9 @@ class InstaData:
                     print("---------------------")
                     print(f"GOING INTO LONG SLEEP MODE FOR {sleep_time}s ({sleep_time/60:.2f}m / {sleep_time/3600:.2f}h)")
                     print("---------------------")
+                    with open("log.csv", "a", encoding="utf-8") as f:
+                        f.write("\n" + "LONG_SLEEP_MODE" + "," + "," +  "," + datetime.now().strftime("%d-%m-%Y, %H:%M:%S"))
+                        
                     time.sleep(sleep_time)
             
 
