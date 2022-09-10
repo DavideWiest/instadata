@@ -236,9 +236,11 @@ class InstaData:
                             print(traceback.format_exc())
                             func_status = "INT_ERR"
                         
+                        end = time.time()
+
                         if use_file_too:
                             with open("log.csv", "a", encoding="utf-8") as f:
-                                f.write("\n" + func_status + "," + str(userid) + "," + str(new_user_ids[userid]) + "," + datetime.now().strftime("%d-%m-%Y %H:%M:%S") + "," + f"{end-start:.2f}s {end-start-self.SLEEP_TIME:.2f}s")
+                                f.write("\n" + func_status + "," + str(userid) + "," + str(new_user_ids[userid]) + "," + datetime.now().strftime("%d-%m-%Y %H:%M:%S") + "," + f"{end-start+self.SLEEP_TIME:.2f}s {end-start:.2f}s")
 
                         if self.SLEEP_TIME != 0:
                             time.sleep(self.SLEEP_TIME)
@@ -269,7 +271,6 @@ class InstaData:
                                 
                                 time.sleep(sleep_time)
 
-                        end = time.time()
                     
                 if print_info:
                     print(f"{followerid} of layer {layer} yielded {len(new_user_ids)} new users")
