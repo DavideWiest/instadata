@@ -12,8 +12,11 @@ from modules.mailhandler import EmailValidator
 from geopy.geocoders import Nominatim
 
 class LocationHandler():
-    def __init__(self):
-        self.locator = Nominatim(user_agent="myGeocoder")
+    def __init__(self, proxies=[]):
+        if proxies != []:
+            self.locator = Nominatim(user_agent="myGeocoder", proxies=proxies)
+        else:
+            self.locator = Nominatim(user_agent="myGeocoder")
 
     def get_address(self, lat, long):
         coordinates = lat, long
