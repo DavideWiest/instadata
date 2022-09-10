@@ -6,23 +6,19 @@ from nltk.stem import WordNetLemmatizer
 import validators
 import nltk
 import unicodedata
-import requests
 import gender_guesser.detector as genderDetector
 from modules.websiteanalyser import WebsiteAnalyser
 from modules.mailhandler import EmailValidator
+from geopy.geocoders import Nominatim
 
-class EmailValidator():
+class LocationHandler():
     def __init__(self):
-        self.api_key = "96124839-5566-47b0-a943-d8299839bd62"
+        self.locator = Nominatim(user_agent="myGeocoder")
 
-    def is_valid(self, email):
-        response = requests.get("https://isitarealemail.com/api/email/validate", params = {"email": email}).json()
-        if "status" in response:
-            return response["status"] == "valid"
-        else:
-            print("---------------------\nCRITICAL ERROR: REALEMAIL API NOT WORKING. Response:\n" + str(response) + "\n---------------------")
-            return True
-
+    def get_address(self, lat, long):
+        coordinates = lat, long
+        location = self.locator.reverse(coordinates)
+        return location.address
 
 gd = genderDetector.Detector()
 wa = WebsiteAnalyser()

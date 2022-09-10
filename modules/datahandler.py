@@ -2,16 +2,18 @@ from datetime import datetime
 import json
 from modules.websiteanalyser import WebsiteAnalyser
 from modules.mailhandler import EmailValidator
+from modules.mailhandler import EmailValidator
 
 wa = WebsiteAnalyser()
 ev = EmailValidator()
 
 
 class DataHandler():
-    def __init__(self, mm, ta, ls):
+    def __init__(self, mm, ta, ls, lh):
         self.mm = mm
         self.ta = ta
         self.ls = ls
+        self.lh = lh
 
         with open("resources/social_websites.txt", "r") as f:
             f = f.read().split("\n")
@@ -216,6 +218,9 @@ class DataHandler():
                     data["tagged_users"].append(entity["user"]["username"])
                 elif "hashtag" in entity:
                     data["hashtags"].append(entity["hashtag"]["name"])
+
+        if data.get("address") in ("", None) and str(data.get("lat")).isnumeric() and str(data.get("lat")).isnumeric():
+            data["address"] = self.lh.get_address(data["lat"], data["long"])
 
         return data
 

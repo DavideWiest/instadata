@@ -5,3 +5,4 @@ from modules import mongomanager
 from modules import linktreescraper
 from modules import datahandler
 from modules import clientgetter
+from modules import custom_errors
