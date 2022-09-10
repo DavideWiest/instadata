@@ -139,7 +139,10 @@ class InstaData:
                 
                 medialoc = media.get("location", None)
                 if medialoc != None:
-                    address = self.locator.get_address(medialoc["lat"], medialoc["lng"])
+                    try:
+                        address = self.locator.get_address(medialoc["lat"], medialoc["lng"])
+                    except:
+                        address = ""
                 
                     loctime = media["taken_at"].strftime("%d-%m-%Y, %H:%M:%S")
                     

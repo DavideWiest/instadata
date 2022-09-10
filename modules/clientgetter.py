@@ -54,7 +54,7 @@ def get_client(settings_file_path, username, password, proxy=""):
         else:
             with open(settings_file) as file_data:
                 cached_settings = json.load(file_data, object_hook=from_json)
-            # print('REUSING CACHED SETTINGS: {0!s}'.format(settings_file))
+            #print('REUSING CACHED SETTINGS: {0!s}'.format(settings_file))
 
             device_id = cached_settings.get('device_id')
             # reuse auth settings

@@ -20,6 +20,12 @@ class LocationHandler():
         location = self.locator.reverse(coordinates)
         return location.address
 
+    def get_whole_location(self, lat, long):
+        coordinates = lat, long
+        location = self.locator.reverse(coordinates)
+        addr = location.raw
+        return addr
+
 gd = genderDetector.Detector()
 wa = WebsiteAnalyser()
 ev = EmailValidator()

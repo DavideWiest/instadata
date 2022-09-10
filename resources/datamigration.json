@@ -43,7 +43,8 @@
             ["zip", "zip"],
             ["lat", "latitude"],
             ["long", "longitude"],
-            ["media_latest_locations", "media_latest_locations"]
+            ["media_latest_locations", "media_latest_locations"],
+            ["location_type", "location_type"]
         ],
         "additional_ig_data": [
             ["hashtags", "hashtags"],

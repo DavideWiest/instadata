@@ -219,8 +219,16 @@ class DataHandler():
                 elif "hashtag" in entity:
                     data["hashtags"].append(entity["hashtag"]["name"])
 
-        if data.get("address") in ("", None) and str(data.get("lat")).isnumeric() and str(data.get("lat")).isnumeric():
-            data["address"] = self.lh.get_address(data["lat"], data["long"])
+        if data.get("address") in ("", None) and str(data.get("latitude")).isnumeric() and str(data.get("longitude")).isnumeric() and data.get("latitude") != 0 and data.get("longitude") != 0:
+            try:
+                loc = self.lh.get_complete_location(data["latitude"], data["longitude"])
+                data["address_street"] = loc["address"]["house_number"] + ", " + loc["address"]["road"]
+                data["city_name"] = loc["address"]["suburb"] + ", " + loc["address"]["state"]
+                data["location_type"] = loc["type"]
+            except:
+                pass
+            
+        data["location_type"] = data.get("location_type", None)
 
         return data
 

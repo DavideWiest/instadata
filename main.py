@@ -17,11 +17,10 @@ SLEEP_TIME = 10
 LONG_SLEEP_TIME = (3600 * 0.5, 3600 * 2)
 ANALYZE_PREVENTION = ("sleep reconnect", 3600 * 2.5)
 
-
 if __name__ == "__main__":
     mm = MongoManager()
     ta = TextAnalyser()
-    lh = LocationHandler()
+    lh = LocationHandler([user[2] for user in ACCOUNTS_DATA if user[2] != ""])
     vd = isValDomainWrapper()
     ls = LinktreeScraper(ta, vd)
     dh = DataHandler(mm, ta, ls, lh)
