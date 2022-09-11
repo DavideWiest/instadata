@@ -72,7 +72,7 @@ class DataHandler():
         if "botscore" in data:
             return (data["botscore"] < 3, data["botscore"])
         botscore = 0
-        botscore += 1 if (data.get("follower_count", 0) / data.get("following_count", 0) + 1) > 7 else 0
+        botscore += 1 if (data.get("follower_count", 0) / (data.get("following_count", 0) + 1)) > 7 else 0
         botscore += 1 if data.get("follower_count", 0) < 20 else 0
         botscore += 1 if data.get("biography", "") == "" else 0
         botscore += 1 if data.get("media_count", 0) < 10 else 0
