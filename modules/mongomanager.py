@@ -37,8 +37,8 @@ class MongoManager:
         self.connect()
         
     def connect(self):
-        user = os.environ.get("con_db_username") if self.user == None else self.user
-        password = os.environ.get("con_db_password") if self.password == None else self.password
+        self.user = os.environ.get("con_db_username") if self.user == None else self.user
+        self.password = os.environ.get("con_db_password") if self.password == None else self.password
         uri = f"mongodb://{self.user}:{self.password}@{self.host}:{self.port}"
         self.client = pymongo.MongoClient(uri)
         self.db = self.client[self.db_name]
@@ -53,9 +53,9 @@ class MongoManager:
             self.backup_client = pymongo.MongoClient(backup_uri)
             self.backup_db = self.backup_client[self.backup_db_name]
         else:
-            backup_user = os.environ.get("con_db_username") if backup_user == None else user
-            backup_password = os.environ.get("con_db_password") if backup_password == None else password
-            backup_uri = f"mongodb://{backup_user}:{backup_password}@{self.backup_host}:{self.backup_port}"
+            self.backup_user = os.environ.get("con_db_username") if self.backup_user == None else self.backup_user
+            self.backup_password = os.environ.get("con_db_password") if self.backup_password == None else self.backup_password
+            backup_uri = f"mongodb://{self.backup_user}:{self.backup_password}@{self.backup_host}:{self.backup_port}"
             self.backup_client = pymongo.MongoClient(backup_uri)
             self.backup_db = self.backup_client[self.backup_db_name]
 
@@ -66,7 +66,7 @@ class MongoManager:
             self.bcol = None
 
         self.last_connection_time = datetime.now()
-        
+
     def upsert_user(self, data):
         self.pcol.update_one(filter={"insta_id": data["insta_id"]}, update={"$set": data}, upsert=True)
         if self.backup_host != None:
@@ -101,4 +101,4 @@ class MongoManager:
         else:
             result = self.pcol.find(filter, returnables)
             
-        return result
+        return list(result)

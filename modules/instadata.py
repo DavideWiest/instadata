@@ -53,7 +53,6 @@ class InstaData:
         
         self.sleep_midnights = (True, analyze_prevention[1]) if "sleep" in analyze_prevention[0].split(" ") else (False, 0)
         self.reconnect_midnights = True if "reconnect" in analyze_prevention[0].split(" ") else False
-        self.last_account = len(self.accounts)-1
 
         self.mm = mm
         self.ta = ta
@@ -63,6 +62,9 @@ class InstaData:
         self.locator = LocationHandler()
 
         self.login()
+
+        # self.last_account = len(self.accounts)-1
+        self.last_account = len(accounts_data)-1
     
     def login(self):
         self.accounts = []
@@ -189,10 +191,15 @@ class InstaData:
         return len_totaluserlist < self.USERMAX
 
     def get_first_layer(self, filter, max_amount=100):
-        idlist = list(self.mm.pcol.aggregate([{"$sample": {"size": max_amount}}, {"$match": filter}, {"$project": {"_id": 0, "insta_id": 1}}]))
-        print(idlist)
+        idlist = self.mm.pcol.aggregate([
+            {"$match": filter}, 
+            {"$sample": {"size": max_amount}}, 
+            {"$project": {"_id": 0, "insta_id": 1}}
+        ])
+        
+        idlist = list(idlist)
         return {a["insta_id"]: 1 for a in idlist}
-
+        
     def make_list(self, print_info=True, use_log=False, db_reconnect=3600*6, gfl_filter={}, gfl_max_amount=200):
         totaluserlist = {}
         layer = 1

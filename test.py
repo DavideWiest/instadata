@@ -24,8 +24,6 @@ if __name__ == "__main__":
     dh = DataHandler(mm, ta, ls, lh)
 
     id = InstaData(ACCOUNTS_DATA, USERMAX, SLEEP_TIME, LONG_SLEEP_TIME, ANALYZE_PREVENTION, mm, ta, ls, dh)
-
-    # gfl_filter = {"category": {"$in" ["Entrepreneur", "Public figure", "Product/service", "Real Estate Agent", "Retail company", "Local business", "Blogger", "Digital Creator"]}}
-    gfl_filter = {"category": {"$nin": ["Artist", "Art"]}}
-    id.make_list(use_log=True, db_reconnect=3600 * 6, gfl_filter=gfl_filter)
-
+    # result = id.get_first_layer({"category": {"$in": ["Entrepreneur", "Public figure"]}}, max_amount=10)
+    result = id.get_first_layer({"category": {"$nin": ["Artist", "Art"]}}, 4)
+    print(result)
