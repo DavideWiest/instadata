@@ -189,9 +189,9 @@ class InstaData:
         return len_totaluserlist < self.USERMAX
 
     def get_first_layer(self, filter, max_amount=100):
-        idlist = list(self.mm.pcol.aggregate([{"$sample": {"size": max_amount}}, {"$match": filter}, {"$project": {"_id": 0, "insta_id": "$_id"}}]))
+        idlist = list(self.mm.pcol.aggregate([{"$sample": {"size": max_amount}}, {"$match": filter}, {"$project": {"_id": 0, "insta_id": 1}}]))
         print(idlist)
-        return {a: 1 for a in idlist}
+        return {a["insta_id"]: 1 for a in idlist}
 
     def make_list(self, print_info=True, use_log=False, db_reconnect=3600*6, gfl_filter={}, gfl_max_amount=200):
         totaluserlist = {}
