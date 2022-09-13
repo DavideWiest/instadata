@@ -71,10 +71,13 @@
         "address_street",
         "city_name",
         "public_phone_country_code",
-        "zip"
+        "zip",
+        "category"
     ],
     "clear_zero_int_fields": [
         "latitude",
-        "longitude"
+        "longitude",
+        "lat",
+        "lng"
     ]
 }

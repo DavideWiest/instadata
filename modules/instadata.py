@@ -3,7 +3,7 @@ from instagrapi.exceptions import RateLimitError, PleaseWaitFewMinutes, ClientCo
 import time
 from modules.clientgetter import get_client
 from geopy.geocoders import Nominatim
-from datetime import datetime
+from datetime import datetime, timedelta
 import langid
 import traceback
 import random
@@ -16,7 +16,7 @@ from modules.custom_errors import get_full_class_name, LoginFailure_cl_Primary, 
 
 
 class Account:
-    def __init__(self, STARTUSER, username, password, proxy):
+    def __init__(self, username, password, proxy):
         self.username = username
         self.password = password
         self.proxy = proxy
@@ -27,7 +27,7 @@ class Account:
             else:
                 self.cl = Client()
             self.cl.login(username, password)
-            self.cl.user_id_from_username(STARTUSER)
+            self.cl.user_info(random.choice(["41004775496", "4344434517", "49305214700"]))
         except (RateLimitError, PleaseWaitFewMinutes) as e:
             raise LoginFailure_cl_Primary(f"for user {username} - {get_full_class_name(e)}")
         except (BadPassword, ReloginAttemptExceeded, SelectContactPointRecoveryForm, RecaptchaChallengeForm, FeedbackRequired):
@@ -43,19 +43,17 @@ class Account:
             raise LoginFailure_cl2_Generic(f"for user {username} - {get_full_class_name(e)}")
 
 class InstaData:
-    def __init__(self, accounts_data, startuser, usermax, sleep_time, long_sleep_time, analyze_prevention, mm, ta, ls, dh):
+    def __init__(self, accounts_data, usermax, sleep_time, long_sleep_time, analyze_prevention, mm, ta, ls, dh):
         assert len(accounts_data) > 0, "User Accounts has to have at least one user (username, password, proxy - optional)"
         
         self.accounts_data = accounts_data
-        self.STARTUSER = startuser
         self.USERMAX = usermax
         self.SLEEP_TIME = sleep_time
         self.LONG_SLEEP_TIME = long_sleep_time
         
         self.sleep_midnights = (True, analyze_prevention[1]) if "sleep" in analyze_prevention[0].split(" ") else (False, 0)
         self.reconnect_midnights = True if "reconnect" in analyze_prevention[0].split(" ") else False
-        
-        
+        self.last_account = len(self.accounts)-1
 
         self.mm = mm
         self.ta = ta
@@ -71,7 +69,7 @@ class InstaData:
         errorcount = 0
         for user in self.accounts_data:
             try:
-                acc_class = Account(self.STARTUSER, user[0], user[1], user[2])
+                acc_class = Account(user[0], user[1], user[2])
                 self.accounts.append(acc_class)
             except (LoginFailure_cl_Primary, LoginFailure_cl_Secondary) as e:
                 errorcount += 1
@@ -83,10 +81,14 @@ class InstaData:
         print(f"LOGIN COMPLETED FOR {len(self.accounts_data) - errorcount} | {errorcount} FAILED")
         
     def cl(self):
-        return random.choice(self.accounts).cl
+        nextacc = self.accounts[(self.last_account + 1) % len(self.accounts)]
+        self.last_account += 1
+        return nextacc.cl
     
     def cl2(self):
-        return random.choice(self.accounts).cl2
+        nextacc = self.accounts[(self.last_account + 1) % len(self.accounts)]
+        self.last_account += 1
+        return nextacc.cl2
 
     def adduser(self, id):
         if self.dh.check_in_db(id):
@@ -186,20 +188,18 @@ class InstaData:
     def check_loop_condition(self, len_totaluserlist):
         return len_totaluserlist < self.USERMAX
 
-    def make_list(self, print_info=True, use_file_too=False, startuser_amount=200):
-        try:
-            startuser_id = self.cl().user_id_from_username(self.STARTUSER)
-            followers = self.cl().user_followers(startuser_id, amount=startuser_amount)
-        except ClientConnectionError:
-            print("ERROR IN make_list: Connectionerror: please restart the program")
-            sys.exit(0)
+    def get_first_layer(self, filter, max_amount=100):
+        idlist = list(self.mm.pcol.aggregate([{"$sample": {"size": max_amount}}, {"$match": filter}, {"$project": {"_id": 0, "insta_id": "$_id"}}]))
+        print(idlist)
+        return {a: 1 for a in idlist}
+
+    def make_list(self, print_info=True, use_log=False, db_reconnect=3600*6, gfl_filter={}, gfl_max_amount=200):
         totaluserlist = {}
         layer = 1
 
         print("SCRAPER STARTING")
 
-        for follower in list(followers):
-            totaluserlist[follower] = 1
+        totaluserlist = self.get_first_layer(gfl_filter, gfl_max_amount)
 
         breakwhile = False
         while self.check_loop_condition(len(totaluserlist)):
@@ -238,9 +238,13 @@ class InstaData:
                         
                         end = time.time()
 
-                        if use_file_too:
+                        if use_log:
                             with open("log.csv", "a", encoding="utf-8") as f:
                                 f.write("\n" + func_status + "," + str(userid) + "," + str(new_user_ids[userid]) + "," + datetime.now().strftime("%d-%m-%Y %H:%M:%S") + "," + f"{end-start+self.SLEEP_TIME:.2f}s {end-start:.2f}s")
+
+                        if db_reconnect not in (0, False):
+                            if datetime.now() < (self.mm.last_connection_time + timedelta(seconds=db_reconnect)):
+                                self.mm.connect()
 
                         if self.SLEEP_TIME != 0:
                             time.sleep(self.SLEEP_TIME)

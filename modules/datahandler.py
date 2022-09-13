@@ -25,6 +25,11 @@ class DataHandler():
 
         self.most_used_websites = f
 
+        with open("resources/email_websites.txt", "r") as f:
+            f = f.read().split("\n")
+
+        self.email_websites = f
+
         with open("resources/unneeded_fields.txt", "r") as f:
             f = f.read().split("\n")
 
@@ -203,12 +208,14 @@ class DataHandler():
                 data["phone_numbers"].remove(pn)
 
         account_type_dict = {
-            1: "consumer/creative/self-employed",
+            1: "normal/consumer",
             2: "business",
-            3: "normal/consumer",
+            3: "consumer/creative/self-employed",
             None: "unknown"
         }
         data["account_type"] = account_type_dict[data["account_type"]]
+        if data["is_business"] == True:
+            data["account_type"] = account_type_dict[2]
 
         data["hashtags"] = []
         data["tagged_users"] = []
@@ -225,10 +232,16 @@ class DataHandler():
                 data["address_street"] = loc["address"]["house_number"] + ", " + loc["address"]["road"]
                 data["city_name"] = loc["address"]["suburb"] + ", " + loc["address"]["state"]
                 data["location_type"] = loc["type"]
+                data["zip"] = loc["address"]["postcode"]
             except:
                 pass
             
         data["location_type"] = data.get("location_type", None)
+
+        for email in data["emails"]:
+            emaildomain = email.split("@")[1]
+            if not any([a in emaildomain for a in self.email_websites]) and emaildomain not in data["domains"] and not any([a in emaildomain for a in self.most_used_websites]):
+                data["domains"][emaildomain] = 1
 
         return data
 
