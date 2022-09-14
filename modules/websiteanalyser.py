@@ -1,4 +1,43 @@
 import requests
+import urllib.request
+import socket
+import urllib.error
+
+socket.setdefaulttimeout(30)
+
+class ProxyChecker:
+    def __init__(self):
+        pass
+
+    def is_bad_proxy(self, proxy):    
+        try:
+            proxy_handler = urllib.request.ProxyHandler({'http': proxy})
+            opener = urllib.request.build_opener(proxy_handler)
+            opener.addheaders = [('User-agent', 'Mozilla/5.0')]
+            urllib.request.install_opener(opener)
+            req=urllib.request.Request('https://www.google.com')  # change the URL to test here
+            sock=urllib.request.urlopen(req)
+        except urllib.error.HTTPError as e:
+            return e.code
+        except Exception as e:
+            return True
+        return False
+
+    def get_valid_proxies(self, max_proxies=float("inf"), print_status=True):
+        with open("resources/proxies.csv", "r") as f:
+            f = f.read().split("\n")
+        
+        proxylist = {}
+        for index, proxydata in enumerate(f):
+            url, port, a1, a2, a3 = proxydata.split(",")
+            if not self.is_bad_proxy(f"{url}:{port}") and index <= max_proxies:
+                proxylist[f"{url}:{port}"] = float(a2) * float(a3) / float(a1)
+
+        if print_status:
+            print(f"PROXIES CHECKED: {len(proxylist)} SUCCEEDED | {len(f)-len(proxylist)} FAILED")
+
+        proxylist_sorted = {k: v for k, v in sorted(proxylist.items(), key=lambda item: item[1], reverse=True)}
+        return proxylist_sorted
 
 class WebsiteAnalyser:
     def __init__(self):

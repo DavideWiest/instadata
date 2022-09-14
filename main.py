@@ -3,17 +3,18 @@ from modules.mongomanager import MongoManager
 from modules.linktreescraper import LinktreeScraper
 from modules.datahandler import DataHandler, isValDomainWrapper
 from modules.instadata import InstaData
+from modules.websiteanalyser import ProxyChecker
 import time
 
-# username, password, proxy
+# username, password
 ACCOUNTS_DATA = [
-    ["seauser565", "seauser656", ""]
+    ["seauser565", "seauser656"]
 ]
 
 USERMAX = float("inf")
-SLEEP_TIME = 10
+SLEEP_TIME = 4
 LONG_SLEEP_TIME = (3600 * 0.5, 3600 * 2)
-ANALYZE_PREVENTION = ("sleep reconnect", 3600 * 2.5)
+ANALYZE_PREVENTION = ("sleep reconnect proxy_reconnect", 3600 * 2.5)
 
 if __name__ == "__main__":
     mm = MongoManager()
@@ -21,9 +22,10 @@ if __name__ == "__main__":
     lh = LocationHandler([user[2] for user in ACCOUNTS_DATA if user[2] != ""])
     vd = isValDomainWrapper()
     ls = LinktreeScraper(ta, vd)
+    pc = ProxyChecker()
     dh = DataHandler(mm, ta, ls, lh)
 
-    id = InstaData(ACCOUNTS_DATA, USERMAX, SLEEP_TIME, LONG_SLEEP_TIME, ANALYZE_PREVENTION, mm, ta, ls, dh)
+    id = InstaData(ACCOUNTS_DATA, USERMAX, SLEEP_TIME, LONG_SLEEP_TIME, ANALYZE_PREVENTION, mm, ta, ls, dh, pc)
 
     # gfl_filter = {"category": {"$in" ["Entrepreneur", "Public figure", "Product/service", "Real Estate Agent", "Retail company", "Local business", "Blogger", "Digital Creator"]}}
     gfl_filter = {"category": {"$nin": ["Artist", "Art"]}}

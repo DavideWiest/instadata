@@ -43,7 +43,7 @@ class Account:
             raise LoginFailure_cl2_Generic(f"for user {username} - {get_full_class_name(e)}")
 
 class InstaData:
-    def __init__(self, accounts_data, usermax, sleep_time, long_sleep_time, analyze_prevention, mm, ta, ls, dh):
+    def __init__(self, accounts_data, usermax, sleep_time, long_sleep_time, analyze_prevention, mm, ta, ls, dh, pc):
         assert len(accounts_data) > 0, "User Accounts has to have at least one user (username, password, proxy - optional)"
         
         self.accounts_data = accounts_data
@@ -58,20 +58,23 @@ class InstaData:
         self.ta = ta
         self.ls = ls
         self.dh = dh
+        self.pc = pc
 
         self.locator = LocationHandler()
 
         self.login()
 
-        # self.last_account = len(self.accounts)-1
         self.last_account = len(accounts_data)-1
     
     def login(self):
+        self.proxies = list(self.pc.get_valid_proxies(max_proxies=len(self.accounts_data)))
+        self.proxies = random.shuffle(self.proxies)
+        
         self.accounts = []
         errorcount = 0
         for user in self.accounts_data:
             try:
-                acc_class = Account(user[0], user[1], user[2])
+                acc_class = Account(user[0], user[1], self.proxies[(self.accounts_data.index(user) + 1) % len(self.proxies)])
                 self.accounts.append(acc_class)
             except (LoginFailure_cl_Primary, LoginFailure_cl_Secondary) as e:
                 errorcount += 1
@@ -80,7 +83,7 @@ class InstaData:
                     print("Exiting program because the only given account failed on login")
                     sys.exit(0)
 
-        print(f"LOGIN COMPLETED FOR {len(self.accounts_data) - errorcount} | {errorcount} FAILED")
+        print(f"LOGIN COMPLETED: {len(self.accounts_data) - errorcount} SUCCEEDED | {errorcount} FAILED")
         
     def cl(self):
         nextacc = self.accounts[(self.last_account + 1) % len(self.accounts)]
