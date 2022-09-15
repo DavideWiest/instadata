@@ -60,9 +60,10 @@ class InstaData:
         self.dh = dh
         self.pc = pc
 
-        self.locator = LocationHandler()
-
         self.login()
+        self.locator = LocationHandler()
+        self.locator.set_proxies(self.proxies)
+        self.locator.login()
 
         self.last_account = len(accounts_data)-1
     

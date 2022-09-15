@@ -13,8 +13,14 @@ from geopy.geocoders import Nominatim
 
 class LocationHandler():
     def __init__(self, proxies=[]):
-        if proxies != []:
-            self.locator = Nominatim(user_agent="myGeocoder", proxies=proxies)
+        self.proxies = proxies
+
+    def set_proxies(self, proxies):
+        self.proxies = proxies
+    
+    def login(self):
+        if self.proxies != []:
+            self.locator = Nominatim(user_agent="myGeocoder", proxies=self.proxies)
         else:
             self.locator = Nominatim(user_agent="myGeocoder")
 

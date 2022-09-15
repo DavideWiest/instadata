@@ -19,10 +19,10 @@ ANALYZE_PREVENTION = ("sleep reconnect proxy_reconnect", 3600 * 2.5)
 if __name__ == "__main__":
     mm = MongoManager()
     ta = TextAnalyser()
-    lh = LocationHandler([user[2] for user in ACCOUNTS_DATA if user[2] != ""])
     vd = isValDomainWrapper()
     ls = LinktreeScraper(ta, vd)
     pc = ProxyChecker()
+    lh = LocationHandler()
     dh = DataHandler(mm, ta, ls, lh)
 
     id = InstaData(ACCOUNTS_DATA, USERMAX, SLEEP_TIME, LONG_SLEEP_TIME, ANALYZE_PREVENTION, mm, ta, ls, dh, pc)
