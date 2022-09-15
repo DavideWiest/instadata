@@ -12,7 +12,7 @@ ACCOUNTS_DATA = [
 ]
 
 USERMAX = float("inf")
-SLEEP_TIME = 4
+SLEEP_TIME = 7
 LONG_SLEEP_TIME = (3600 * 0.5, 3600 * 2)
 ANALYZE_PREVENTION = ("sleep reconnect proxy_reconnect", 3600 * 2.5)
 
@@ -29,5 +29,5 @@ if __name__ == "__main__":
 
     # gfl_filter = {"category": {"$in" ["Entrepreneur", "Public figure", "Product/service", "Real Estate Agent", "Retail company", "Local business", "Blogger", "Digital Creator"]}}
     gfl_filter = {"category": {"$nin": ["Artist", "Art"]}}
-    id.make_list(use_log=True, db_reconnect=3600 * 6, gfl_filter=gfl_filter)
+    id.make_list(use_log=True, db_reconnect=3600 * 4, gfl_filter=gfl_filter)
 
