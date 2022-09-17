@@ -48,7 +48,7 @@ class InstaData:
         
         self.accounts_data = accounts_data
         self.USERMAX = usermax
-        self.SLEEP_TIME = sleep_time
+        self.SLEEP_TIME = sleep_time / len(self.accounts_data)
         self.LONG_SLEEP_TIME = long_sleep_time
         
         self.sleep_midnights = (True, analyze_prevention[1]) if "sleep" in analyze_prevention[0].split(" ") else (False, 0)
