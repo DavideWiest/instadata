@@ -122,6 +122,9 @@ class InstaData:
             log_account_exit(crnt_acc.username, self.error_account_map[crnt_acc.username])
             del self.accounts[self.last_account]
             self.SLEEP_TIME = self.SLEEP_TIME_ORIGINAL / len(self.accounts)
+            if self.accounts_data == []:
+                print("Exiting program because the only remaining account failed during scraping")
+                sys.exit(0)
 
     def adduser(self, id):
         if self.dh.check_in_db(id):
