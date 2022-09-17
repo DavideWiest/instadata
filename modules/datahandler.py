@@ -15,7 +15,7 @@ class DataHandler():
         self.ls = ls
         self.lh = lh
 
-        with open("resources/social_websites.txt", "r") as f:
+        ("resources/social_wwith openebsites.txt", "r") as f:
             f = f.read().split("\n")
 
         self.social_network_list = f

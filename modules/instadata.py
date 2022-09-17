@@ -12,7 +12,7 @@ from modules.textanalyser import LocationHandler
 
 from instagram_private_api import (ClientError, ClientLoginError, ClientCookieExpiredError, ClientLoginRequiredError)
 from instagrapi.exceptions import (BadPassword, ReloginAttemptExceeded, ChallengeRequired, SelectContactPointRecoveryForm, RecaptchaChallengeForm, FeedbackRequired, PleaseWaitFewMinutes, LoginRequired)
-from modules.custom_errors import get_full_class_name, LoginFailure_cl_Primary, LoginFailure_cl_Secondary, LoginFailure_cl_Generic, LoginFailure_cl2_Secondary, LoginFailure_cl2_Generic
+from modules.custom_errors import get_full_class_name, log_account_exit, LoginFailure_cl_Primary, LoginFailure_cl_Secondary, LoginFailure_cl_Generic, LoginFailure_cl2_Secondary, LoginFailure_cl2_Generic
 
 
 class Account:
@@ -48,6 +48,7 @@ class InstaData:
         
         self.accounts_data = accounts_data
         self.USERMAX = usermax
+        self.SLEEP_TIME_ORIGINAL = self.SLEEP_TIME
         self.SLEEP_TIME = sleep_time / len(self.accounts_data)
         self.LONG_SLEEP_TIME = long_sleep_time
         
@@ -70,16 +71,19 @@ class InstaData:
     def login(self):
         self.proxies = list(self.pc.get_valid_proxies(max_proxies=len(self.accounts_data)))
         self.proxies = random.shuffle(self.proxies)
+        self.error_account_map = {}
         
         self.accounts = []
         errorcount = 0
         for user in self.accounts_data:
+            self.error_account_map[user[0]] = {"counter": 0, "errors": []}
             try:
                 acc_class = Account(user[0], user[1], self.proxies[(self.accounts_data.index(user) + 1) % len(self.proxies)])
                 self.accounts.append(acc_class)
             except (LoginFailure_cl_Primary, LoginFailure_cl_Secondary) as e:
                 errorcount += 1
                 print(e.message)
+                self.add_account_error(e)
                 if len(self.accounts_data) < 2:
                     print("Exiting program because the only given account failed on login")
                     sys.exit(0)
@@ -87,14 +91,37 @@ class InstaData:
         print(f"LOGIN COMPLETED: {len(self.accounts_data) - errorcount} SUCCEEDED | {errorcount} FAILED")
         
     def cl(self):
-        nextacc = self.accounts[(self.last_account + 1) % len(self.accounts)]
         self.last_account += 1
+        nextacc = self.accounts[(self.last_account) % len(self.accounts)]
         return nextacc.cl
     
     def cl2(self):
-        nextacc = self.accounts[(self.last_account + 1) % len(self.accounts)]
         self.last_account += 1
+        nextacc = self.accounts[(self.last_account) % len(self.accounts)]
         return nextacc.cl2
+
+    def get_current_account(self):
+        return self.accounts[(self.last_account) % len(self.accounts)]
+
+    def pop_account_error(self):
+        crnt_acc = self.get_current_account()
+        if self.error_account_map[crnt_acc.username]["counter"] > 0:
+            self.error_account_map[crnt_acc.username]["counter"] -= 1
+        lastitem = list(self.error_account_map[crnt_acc.username]["errors"])[-1]
+
+        del self.error_account_map[crnt_acc.username]["errors"][lastitem]
+
+    def add_account_error(self, e):
+        crnt_acc = self.get_current_account()
+        errname = get_full_class_name(e)
+        errmsg = str(e)
+        self.error_account_map[crnt_acc.username]["errors"].append((errname, errmsg))
+        self.error_account_map[crnt_acc.username]["counter"] += 1
+
+        if self.error_account_map[crnt_acc.username]["counter"] >= 5:
+            log_account_exit(crnt_acc.username, self.error_account_map[crnt_acc.username])
+            del self.accounts[self.last_account]
+            self.SLEEP_TIME = self.SLEEP_TIME_ORIGINAL / len(self.accounts)
 
     def adduser(self, id):
         if self.dh.check_in_db(id):
@@ -134,7 +161,6 @@ class InstaData:
 
         data = self.dh.restruture_data(data)
         self.mm.upsert_user(data)
-
 
     def get_mediadata(self, userid, number=8):
         medias = self.cl().user_medias(userid, number)
@@ -182,8 +208,10 @@ class InstaData:
     def expandreach(self, userid, layer):
         try:
             subfollowers = self.cl().user_followers(userid, amount=100)
-        except ClientConnectionError:
+            self.pop_account_error()
+        except ClientConnectionError as e:
             print("ERROR IN expandreach: Connectionerror: skipping user")
+            self.add_account_error(e)
             return {}
         subfollowersdict = {}
         for id in subfollowers:
@@ -227,25 +255,30 @@ class InstaData:
                         try:
                             self.adduser(userid)
                             func_status = "SUCCESS"
+                            self.pop_account_error()
                         except KeyboardInterrupt:
                             print("PROGRAM ENDED THROUGH C^ INPUT")
                             sys.exit(0)
-                        except (PleaseWaitFewMinutes, RateLimitError):
+                        except (PleaseWaitFewMinutes, RateLimitError) as e:
                             print("ERROR IN adduser: Program was ratelimited - retry in some hours")
                             print(traceback.format_exc())
                             func_status = "RTLMTERR"
-                        except (BadPassword, ReloginAttemptExceeded, LoginRequired, ClientError, ClientLoginError, ClientCookieExpiredError, ClientLoginRequiredError):
+                            self.add_account_error(e)
+                        except (BadPassword, ReloginAttemptExceeded, LoginRequired, ClientError, ClientLoginError, ClientCookieExpiredError, ClientLoginRequiredError) as e:
                             print("ERROR IN adduser")
                             print(traceback.format_exc())
                             func_status = "INT_ERR"
-                        except ChallengeRequired:
+                            self.add_account_error(e)
+                        except ChallengeRequired as e:
                             print("ERROR IN adduser: Challenge required.")
                             print(traceback.format_exc())
-                            raise 
-                        except Exception:
+                            func_status = "CLG_ERR"
+                            self.add_account_error(e)
+                        except Exception as e:
                             print("ERROR IN adduser")
                             print(traceback.format_exc())
                             func_status = "INT_ERR"
+                            self.add_account_error(e)
                         
                         end = time.time()
 
