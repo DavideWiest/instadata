@@ -15,7 +15,7 @@ USERMAX = float("inf")
 SLEEP_TIME = 7
 LONG_SLEEP_TIME = (3600 * 0.5, 3600 * 2)
 ANALYZE_PREVENTION = ("sleep reconnect proxy_reconnect", 3600 * 2.5)
-gfl_filter = {"category": {"$nin": ["Artist", "Art", "Photographer", "Graphic Designer", "Digital creator", "Visual Arts"]}}
+gfl_filter = {"category": {"$nin": ["Artist", "Art", "Photographer", "Graphic Designer", "Visual Arts"]}}
 
 if __name__ == "__main__":
     mm = MongoManager()
