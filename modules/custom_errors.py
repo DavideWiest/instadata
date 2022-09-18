@@ -44,11 +44,11 @@ def get_full_class_name(obj):
         return module + '.' + obj.__class__.__name__
 
 def log_account_exit(username, errdict):
-    with open(f"resources/errorlog/accounts.json", "r") as f:
+    with open(f"resources/logs/account_errors/info.json", "r") as f:
         logfile = json.load(f)
 
     logfile[username] = errdict
 
-    with open(f"resources/errorlog/accounts.json", "w") as f:
+    with open(f"resources/logs/account_errors/info.json", "w") as f:
         json.dump(logfile, f, indent=4)
 

@@ -286,7 +286,7 @@ class InstaData:
                         end = time.time()
 
                         if use_log:
-                            with open("log.csv", "a", encoding="utf-8") as f:
+                            with open("logs/log.csv", "a", encoding="utf-8") as f:
                                 f.write("\n" + func_status + "," + str(userid) + "," + str(new_user_ids[userid]) + "," + datetime.now().strftime("%d-%m-%Y %H:%M:%S") + "," + f"{end-start+self.SLEEP_TIME:.2f}s {end-start:.2f}s")
 
                         if db_reconnect not in (0, False):
@@ -303,7 +303,7 @@ class InstaData:
                                 print("---------------------")
                                 print(f"GOING INTO MIDNIGHT SLEEP MODE FOR " + time.strftime('%Hh %Mm %Ss', time.gmtime(self.sleep_midnights[1])) + datetime.now().strftime("%d-%m-%Y, %H:%M:%S"))
                                 print("---------------------")
-                                with open("log.csv", "a", encoding="utf-8") as f:
+                                with open("logs/log.csv", "a", encoding="utf-8") as f:
                                     f.write("\n" + "MIDNIGHT_SLEEP_MODE" + "," + "," +  "," + datetime.now().strftime("%d-%m-%Y %H:%M:%S") + "," + time.strftime('%Hh %Mm %Ss', time.gmtime(self.sleep_midnights[1])))
                                 
                                 time.sleep(sleep_time)
@@ -317,7 +317,7 @@ class InstaData:
                                 print("---------------------")
                                 print(f"GOING INTO LONG SLEEP MODE FOR " + time.strftime('%Hh %Mm %Ss', time.gmtime(sleep_time)) + datetime.now().strftime("%d-%m-%Y, %H:%M:%S"))
                                 print("---------------------")
-                                with open("log.csv", "a", encoding="utf-8") as f:
+                                with open("logs/log.csv", "a", encoding="utf-8") as f:
                                     f.write("\n" + "LONG_SLEEP_MODE" + "," + "," +  "," + datetime.now().strftime("%d-%m-%Y %H:%M:%S") + "," + time.strftime('%Hh %Mm %Ss', time.gmtime(sleep_time)))
                                 
                                 time.sleep(sleep_time)
@@ -334,7 +334,7 @@ class InstaData:
                 break
 
             print(f"ADDING SCRAPING LAYER - NEXT LAYER: {layer+1}")
-            with open("log.csv", "a", encoding="utf-8") as f:
+            with open("logs/log.csv", "a", encoding="utf-8") as f:
                 f.write("\n" + "ADDING_LAYER:" + str(layer+1) + "," + "," +  "," + datetime.now().strftime("%d-%m-%Y %H:%M:%S") + ",")
                         
 
