@@ -46,5 +46,5 @@
 function status | user id | layer | current time | time to complete
 status and current time required
 
-# Inquiries at **[davide.wiest2@gmail.com](mailto:davide.wiest2@gmail.com)**
+## Inquiries and Suggestions at **[davide.wiest2@gmail.com](mailto:davide.wiest2@gmail.com)**
 ##### I am a busy Python (Web) Developer that can work on a freelance basis.
