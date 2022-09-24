@@ -1,17 +1,13 @@
 # Instadata - A holistic Python Instagram Scraper
 ### integrating with MongoDb, sitarealemail.com, nltk, locator (nominatim) instagram_private_api and instagrapi
 # What this Scraper can do:
-#### Collecting Keywords
-#### Collecting Hashtags
-#### Collecting **E-Mail-Addresses**
-#### Collecting **Phone-Numbers**
-#### **Gender** and **Name** analysis
-#### **Language** analysis
-#### **Scrape linktree Profiles** and capture more links
-#### Identify **custom linked websites** and **social profiles**
-#### Check if this profile is likely to be a bot
-#### Collecting user info like the biography, profile picture, full name, and more, both in its original form and **normalized** (abstract fonts will be converted to normal letters) 
+#### Collecting Keywords. Hashtags, **E-Mail-Addresses**, **Phone-Numbers**
+#### **Gender**, **Name** and **Language** analysis
+#### **Scrape linktree Profiles** and capture more links, identify **custom linked websites** and **social profiles**
+#### Check if this profile is a bot
+#### Collect user information like the biography, profile picture, full name, and more, both in its original form and **normalized** (abstract fonts will be converted to normal letters)
 #### Use Proxies on **all** requests
+#### Split the load up to as many accounts as possible
 
 ### Warning: This Scraper is **fully automatic**, however, if you overdo the scraping, **ratelimits** can occur and get your Account **blocked** (you will need to manuaally verify yourself through email or a phone number).
 
@@ -20,9 +16,9 @@
 
 # How this scraper works
 - execute the program with **python3 main.py**
-- *When properly configured*, the scraper will first connect to all given accounts through two of the best instagram api wrappers
+- *When properly configured*, the scraper will first connect to all given accounts through two of the best instagram api wrappers. It will also use proxies, if any are specified and work. When either an account or a proxy connection don't work, the scraper will continue, but inform you through a warning.
 - After that, other initialization work, such as finding starting users will be completed
-- The Program will now start scraping: It will scrape, analyze, and save all data to the database directly. Afterwards it will sleep for how SLEEP_TIME seconds
+- The Program will now start scraping: It will scrape, analyze, and save all data to the database directly. Afterwards it will sleep for how SLEEP_TIME seconds. That means you can see if accounts are being scraped in real time in log.csv or through the MongoDB Compass application.
 - With a chance of 1:1750, the program will enter a *long sleeping phase* to decrease odds of being ratelimited or blocked by Instagram's anti-scraping-measures. It will sleep in seconds for a random number between the range specified in LONG_SLEEP_TIME
 - It will also reconnect to the MongoDB database 
 - Midnights (if specified in ANALYZE_PREVENTION[0]) the program will reconnect the accounts, sleep for ANALYZE_PREVENTION[1] seconds, and reconnect the accounts
