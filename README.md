@@ -17,6 +17,15 @@
 
 ### Info. This is the basis of the [IDWW Package](https://github.com/DavideWiest/idww). IDWW (InstaData Web Wrapper) offers a upgraded version of this package that uses django for a **user interface**
 
+
+# How this scraper works
+- *When properly configured*, the scraper will first connect to all given accounts through two of the best instagram api wrappers
+- After that, other initialization work, such as finding starting users will be completed
+- The Program will now start scraping: It will scrape, analyze, and save all data to the database directly. Afterwards it will sleep for how SLEEP_TIME seconds
+- With a chance of 1:1750, the program will enter a *long sleeping phase* to decrease odds of being ratelimited or blocked by Instagram's anti-scraping-measures. It will sleep in seconds for a random number between the range specified in LONG_SLEEP_TIME
+- It will also reconnect to the MongoDB database 
+- Midnights (if specified in ANALYZE_PREVENTION[0]) the program will reconnect the accounts, sleep for ANALYZE_PREVENTION[1] seconds, and reconnect the accounts
+
 # How to start
 ### Info
 - Variables which are written in CAPSLOCK can be changed to customize the program
@@ -34,13 +43,6 @@
 - configure variables such as SLEEP_TIME, LONG_SLEEP_TIME or USERMAX: We advise you not to change the variables too much as we had success with the base configuration
 - SLEEP_TIME should **not** be below 5 (seconds)
 
-# How this scraper works
-- *When properly configured*, the scraper will first connect to all given accounts through two of the best instagram api wrappers
-- After that, other initialization work, such as finding starting users will be completed
-- The Program will now start scraping: It will scrape, analyze, and save all data to the database directly. Afterwards it will sleep for how SLEEP_TIME seconds
-- With a chance of 1:1750, the program will enter a *long sleeping phase* to decrease odds of being ratelimited or blocked by Instagram's anti-scraping-measures. It will sleep in seconds for a random number between the range specified in LONG_SLEEP_TIME
-- It will also reconnect to the MongoDB database 
-- Midnights (if specified in ANALYZE_PREVENTION[0]) the program will reconnect the accounts, sleep for ANALYZE_PREVENTION[1] seconds, and reconnect the accounts
 
 ## log system
 ##### The Scraper has two kinds of logs: the Stdout (logged to console via print) and the main logger that logs status and time to complete after a profile was scraped 
