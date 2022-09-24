@@ -13,7 +13,7 @@
 #### Collecting user info like the biography, profile picture, full name, and more, both in its original form and **normalized** (abstract fonts will be converted to normal letters) 
 #### Use Proxies on **all** requests
 
-### Warning: This Scraper is **fully automatic**, however, if you overdo the scraping, **ratelimits** can occur and get your Account **blocked** (you will need to manuaglly verify yourself through email or a phone number)
+### Warning: This Scraper is **fully automatic**, however, if you overdo the scraping, **ratelimits** can occur and get your Account **blocked** (you will need to manuaally verify yourself through email or a phone number).
 
 ### Info. This is the basis of the [IDWW Package](https://github.com/DavideWiest/idww). IDWW (InstaData Web Wrapper) offers a upgraded version of this package that uses django for a **user interface**
 
@@ -44,7 +44,7 @@
 
 ## log system
 ##### The Scraper has two kinds of logs: the Stdout (logged to console via print) and the main logger that logs status and time to complete after a profile was scraped 
-function status | user id | layer | current time | time to complete
+This is hwo the log.csv messages are sturctured: function status | user id | layer | current time | time to complete
 status and current time required
 
 ## Inquiries and Suggestions at **[davide.wiest2@gmail.com](mailto:davide.wiest2@gmail.com)**
