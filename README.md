@@ -1,13 +1,13 @@
 # Instadata - A holistic Python Instagram Scraper
 ### integrating with MongoDb, sitarealemail.com, nltk, locator (nominatim) instagram_private_api and instagrapi
 # What this Scraper can do:
-#### Collecting Keywords. Hashtags, **E-Mail-Addresses**, **Phone-Numbers**
-#### **Gender**, **Name** and **Language** analysis
-#### **Scrape linktree Profiles** and capture more links, identify **custom linked websites** and **social profiles**
-#### Check if this profile is a bot
-#### Collect user information like the biography, profile picture, full name, and more, both in its original form and **normalized** (abstract fonts will be converted to normal letters)
-#### Use Proxies on **all** requests
-#### Split the load up to as many accounts as possible
+#### - Collecting Keywords. Hashtags, **E-Mail-Addresses**, **Phone-Numbers**
+#### - **Gender**, **Name** and **Language** analysis
+#### - **Scrape linktree Profiles** and capture more links, identify **custom linked websites** and **social profiles**
+#### - Check if this profile is a bot
+#### - Collect user information like the biography, profile picture, full name, and more, both in its original form and **normalized** (abstract fonts will be converted to normal letters)
+#### - Use Proxies on **all** requests
+#### - Split the load up to as many accounts as possible
 
 ### Warning: This Scraper is **fully automatic**, however, if you overdo the scraping, **ratelimits** can occur and get your Account **blocked** (you will need to manuaally verify yourself through email or a phone number).
 
