@@ -35,7 +35,7 @@
 - configure the Database variable in **modules/mongomanager.py**
 - visit sitarealemail.com and get an API Link. Paste this Api-key in the variable API_KEY in **modules/mailhandler.py**
 - populate ACCOUNTS_DATA with valid instagram accounts that will be used to access Instagram. Example: ("username123", "password321")
-- We highly encourage you to use **proxies** to increase privacy. Paste working proxies into this 
+- We highly encourage you to use **proxies** to increase privacy. Paste working proxies into the **resources/proxies.csv** file (a list of public proxies can be found inside resources/proxies3.csv) (see the structuring in resources/proxies2.csv: connection,port,latency,uptime,location_index. The last 3 values are used to sort the proxies by which is best. If you don't have this information, use 1 as default value)
 
 ### Optional Configuration
 - If you want, you can configure a backup connection in case something happens to the primary one. If not, leave the backup connection out
