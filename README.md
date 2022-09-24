@@ -31,7 +31,7 @@
 
 ### Info
 - Variables which are written in CAPSLOCK can be changed to customize the program
-- 
+
 ### Must Do before starting
 - install all packages from **requirements.txt**
 - in **requirements.txt** you wil find two commented lines: Install the instagram_private_api package through the github link. When trying to run the scraper, you will likely see error messages from nltk. Use the given python commands to install the required nltk sub-packages. This is required for text analysis.
