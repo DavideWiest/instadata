@@ -19,6 +19,7 @@
 
 
 # How this scraper works
+- execute the program with **python3 main.py**
 - *When properly configured*, the scraper will first connect to all given accounts through two of the best instagram api wrappers
 - After that, other initialization work, such as finding starting users will be completed
 - The Program will now start scraping: It will scrape, analyze, and save all data to the database directly. Afterwards it will sleep for how SLEEP_TIME seconds
