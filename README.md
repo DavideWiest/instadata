@@ -31,8 +31,9 @@
 ### Must Do before starting
 - install all packages from **requirements.txt**
 - in **requirements.txt** you wil find two commented lines: Install the instagram_private_api package through the github link. When trying to run the scraper, you will likely see error messages from nltk. Use the given python commands to install the required nltk sub-packages. This is required for text analysis.
-- download MongoDB on your pc and configure a mongodb link. This is the integrated, and strongly preferred Database
-- configure the Database variable in **modules/mongomanager.py**
+- download MongoDB on your pc and configure a mongodb link. This is the integrated, and strongly preferred Database. Recommened: Install MondoDB Compass
+- create a database and a collection in your database (Using MongoDB Compass is advised)
+- configure the Database variables, such as the database name in **modules/mongomanager.py**
 - visit sitarealemail.com and get an API Link. Paste this Api-key in the variable API_KEY in **modules/mailhandler.py**
 - populate ACCOUNTS_DATA with valid instagram accounts that will be used to access Instagram. Example: ("username123", "password321")
 - We highly encourage you to use **proxies** to increase privacy. Paste working proxies into the **resources/proxies.csv** file (a list of public proxies can be found inside resources/proxies3.csv) (see the structuring in resources/proxies2.csv: connection,port,latency,uptime,location_index. The last 3 values are used to sort the proxies by which is best. If you don't have this information, use 1 as default value)
