@@ -1,6 +1,6 @@
 import requests
 
-API_KEY = "96124839-5566-47b0-a943-d8299839bd62"
+API_KEY = ""
 
 class EmailValidator():
     def __init__(self):
