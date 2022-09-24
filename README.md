@@ -27,8 +27,10 @@
 - Midnights (if specified in ANALYZE_PREVENTION[0]) the program will reconnect the accounts, sleep for ANALYZE_PREVENTION[1] seconds, and reconnect the accounts
 
 # How to start
+
 ### Info
 - Variables which are written in CAPSLOCK can be changed to customize the program
+- 
 ### Must Do before starting
 - install all packages from **requirements.txt**
 - in **requirements.txt** you wil find two commented lines: Install the instagram_private_api package through the github link. When trying to run the scraper, you will likely see error messages from nltk. Use the given python commands to install the required nltk sub-packages. This is required for text analysis.
@@ -45,9 +47,10 @@
 
 
 ## log system
+
 ##### The Scraper has two kinds of logs: the Stdout (logged to console via print) and the main logger that logs status and time to complete after a profile was scraped 
-This is hwo the log.csv messages are sturctured: function status | user id | layer | current time | time to complete
+This is how the log.csv messages are sturctured: function status | user id | layer | current time | time to complete
 status and current time required
 
 ## Inquiries and Suggestions at **[davide.wiest2@gmail.com](mailto:davide.wiest2@gmail.com)**
-##### I am a busy Python (Web) Developer that can work on a freelance basis.
+#### I am a busy Python (Web) Developer that can work on a freelance basis.
