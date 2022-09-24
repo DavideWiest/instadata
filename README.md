@@ -1,11 +1,50 @@
+# Instadata - A holistic Python Instagram Scraper
+### integrating with MongoDb, sitarealemail.com, the instagram_private_api modules and the instagrapi module
+# What this Scraper can do:
+## Collecting Keywords
+## Collecting Hashtags
+## Collecting **E-Mail-Addresses**
+## Collecting **Phone-Numbers**
+## **Gender** and **Name** analysis
+ää **Language** analysis
+## **Scrape linktree Profiles** and capture more links
+## Identify **custom linked websites** and **social profiles**
+## Check if this profile is likely to be a bot
+## Collecting user info like the biography, profile picture, full name, and more, both in its original form and **normalized** (abstract fonts will be converted to normal letters) 
 
+### Warning: This Scraper is **fully automatic**, however, if you overdo the scraping, **ratelimits** can occur and get your Account **blocked** (you will need to manuaglly verify yourself through email or a phone number)
+
+### Info. This is the basis of the [IDWW Package](https://github.com/DavideWiest/idww). IDWW (InstaData Web Wrapper) offers a upgraded version of this package that uses django for a **user interface**
+
+# How to start
+### Info
+- Variables which are written in CAPSLOCK can be changed to customize the program
+### Must Do before starting
+- install all packages from **requirements.txt**
+- in **requirements.txt** you wil find two commented lines: Install the instagram_private_api package through the github link. When trying to run the scraper, you will likely see error messages from nltk. Use the given python commands to install the required nltk sub-packages. This is required for text analysis.
+- download MongoDB on your pc, or use another mongodb link. This is the integrated, and strongly preferred Database
+- configure the Database variable in **modules/mongomanager.py**
+- visit sitarealemail.com and get an API Link. Paste this Api-key in the variable API_KEY in **modules/mailhandler.py**
+- populate ACCOUNTS_DATA with valid instagram accounts that will be used to access Instagram. Example: ("username123", "password321")
+- We highly encourage you to use **proxies** to increase privacy. Paste working proxies into this 
+
+### Optional Configuration
+- If you want, you can configure a backup connection in case something happens to the primary one. If not, leave the backup connection out
+- configure variables such as SLEEP_TIME, LONG_SLEEP_TIME or USERMAX: We advise you not to change the variables too much as we had success with the base configuration
+- SLEEP_TIME should **not** be below 5 (seconds)
+
+# How this scraper works
+- *When properly configured*, the scraper will first connect to all given accounts through two of the best instagram api wrappers
+- After that, other initialization work, such as finding starting users will be completed
+- The Program will now start scraping: It will scrape, analyze, and save all data to the database directly. Afterwards it will sleep for how SLEEP_TIME seconds
+- With a chance of 1:1750, the program will enter a *long sleeping phase* to decrease odds of being ratelimited or blocked by Instagram's anti-scraping-measures. It will sleep in seconds for a random number between the range specified in LONG_SLEEP_TIME
+- It will also reconnect to the MongoDB database 
+- Midnights (if specified in ANALYZE_PREVENTION[0]) the program will reconnect the accounts, sleep for ANALYZE_PREVENTION[1] seconds, and reconnect the accounts
 
 ## log system
+##### The Scraper has two kinds of logs: the Stdout (logged to console via print) and the main logger that logs status and time to complete after a profile was scraped 
 function status | user id | layer | current time | time to complete
 status and current time required
 
-## to do
-- webapp Admin-Exportier-seite: exporiter-funktion (json -> csc -> xslx) (gen_token, saveas  -> show-token-seite (copyToken)
-- webapp Admin-Exports-Info-seite: view exports and tokens (link to export site) (einfache tabelle vom dashboard)
-- webapp Nutzer-Export-seite: view/download exports
-- wenapp Admin-Token-verändern-seite: change auth token
+# Inquiries at **[davide.wiest2@gmail.com](mailto:davide.wiest2@gmail.com)**
+##### I am a busy Python (Web) Developer that can work on a freelance basis.
